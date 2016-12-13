@@ -81,7 +81,7 @@ setup(
     description=twempest.__doc__.strip(),
     entry_points={
         'console_scripts': [
-            "twempest=twempest.__main__:main",
+            "twempest=twempest.__main__:twempest",
         ]
     },
     extras_require={

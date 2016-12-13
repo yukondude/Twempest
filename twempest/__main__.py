@@ -23,7 +23,7 @@ def show_version(ctx, param, value):
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
-def main():
+def twempest():
     """ Download a sequence of recent Twitter tweets and convert these, via template, to text format.
     """
     here = os.path.dirname(os.path.realpath(__file__))
