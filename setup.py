@@ -80,7 +80,9 @@ setup(
     },
     description=twempest.__doc__.strip(),
     entry_points={
-        'console_scripts': "twempest/__main__.py",
+        'console_scripts': [
+            "twempest=twempest.__main__:main",
+        ]
     },
     extras_require={
         'testing': gather_requirements("requirements-test.txt"),
