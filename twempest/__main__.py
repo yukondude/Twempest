@@ -36,7 +36,7 @@ def twempest():
     auth.set_access_token(twitter_config['access_token'], twitter_config['access_token_secret'])
     api = tweepy.API(auth)
 
-    public_tweets = api.user_timeline(include_rts=False)
+    public_tweets = api.user_timeline(include_rts=True)
 
     for tweet in public_tweets[:10]:
         try:
