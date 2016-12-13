@@ -1,0 +1,17 @@
+# Sample Twempest configuration file.
+# Save this to ~/.twempest.conf as the default configuration whenever twempest
+# is run, or save it somewhere convenient as twempest.conf and reference it via
+# the -c/--config command-line switch options.
+
+[twempest]
+# Most twempest long-form command-line switches may be used here (excluding the
+# leading double-dash). The obvious exceptions would include --config, --help,
+# and --version, but go ahead and try them if you like.
+
+[twitter]
+# Visit https://apps.twitter.com/ to generate these keys, secrets, tokens, and
+# token secrets. Secret tokens? Token keys? Secret secrets?
+consumer_key=
+consumer_secret=
+access_token=
+access_token_secret=
