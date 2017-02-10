@@ -66,7 +66,7 @@ Development Setup
 7. Pour a snifter of Château de Montifaud and light up a Laranja Reserva
    Toro.
 
-*README.md generated December 12, 2016*
+*README.md generated February 10, 2017*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
