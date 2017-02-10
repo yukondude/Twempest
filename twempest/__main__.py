@@ -44,9 +44,10 @@ def show_version(ctx, param, value):
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--config-path", "-c", default=DEFAULT_CONFIG_PATH, show_default=True,
               help="Twempest configuration directory path. The twempest.conf file must exist in this location.")
-@click.option("--include-retweets", "-r", is_flag=True, default=False, help="Include retweets in the list of retrieved tweets.")
+@click.option("--replies", "-@", is_flag=True, default=False, help="Include @replies in the list of retrieved tweets.")
+@click.option("--retweets", "-r", is_flag=True, default=False, help="Include retweets in the list of retrieved tweets.")
 @click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
-def twempest(config_path, include_retweets):
+def twempest(config_path, replies, retweets):
     """ Download a sequence of recent Twitter tweets and convert these, via template, to text format.
     """
     config = configparser.ConfigParser()
@@ -58,10 +59,13 @@ def twempest(config_path, include_retweets):
     auth.set_access_token(twitter_config['access_token'], twitter_config['access_token_secret'])
     api = tweepy.API(auth)
 
-    public_tweets = api.user_timeline(count=50, include_rts=include_retweets)
+    public_tweets = api.user_timeline(count=50, include_rts=retweets)
 
     for tweet in public_tweets:
         try:
+            if not replies and tweet.in_reply_to_status_id:
+                continue
+
             print(tweet.id, tweet.created_at, tweet.text)
         except AttributeError:
             print(tweet.id, "NOPE")
