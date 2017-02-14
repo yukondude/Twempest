@@ -6,7 +6,11 @@
 [twempest]
 # Most twempest long-form command-line switches may be used here (excluding the
 # leading double-dash). The obvious exceptions would include --config-path,
-# --help, and --version, but go ahead and try them if you like.
+# --help, and --version, but go ahead and try them if you like. The defaults
+# are shown below, commented out. See the --help output for details.
+
+# replies = false
+# retweets = false
 
 [twitter]
 # Visit https://apps.twitter.com/ to generate these keys, secrets, tokens, and
