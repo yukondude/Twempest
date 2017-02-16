@@ -42,7 +42,6 @@ On *NIX, you will first need to install Python 3.3 (or higher) using your prefer
 
 ## Development Setup
 
- 1. Install Twempest, as above, so that all of its dependencies are available.
  1. Create a Python 3 virtualenv for Twempest: `mkvirtualenv --python=$(which python3) Twempest`
  1. Clone the Twempest repo: `git clone https://github.com/yukondude/Twempest.git`
  1. Install dependencies: `pip install -r requirements.txt -r requirements-dev.txt -r requirements-test.txt`
@@ -50,4 +49,4 @@ On *NIX, you will first need to install Python 3.3 (or higher) using your prefer
  1. Run the unit tests to make sure everything is copacetic: `./setup.py test`
  1. Pour a snifter of Château de Montifaud and light up a Laranja Reserva Toro.
 
-*README.md generated February 10, 2017*
+*README.md generated February 16, 2017*

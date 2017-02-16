@@ -52,21 +52,19 @@ your preferred method.
 Development Setup
 -----------------
 
-1. Install Twempest, as above, so that all of its dependencies are
-   available.
-2. Create a Python 3 virtualenv for Twempest:
+1. Create a Python 3 virtualenv for Twempest:
    ``mkvirtualenv --python=$(which python3) Twempest``
-3. Clone the Twempest repo:
+2. Clone the Twempest repo:
    ``git clone https://github.com/yukondude/Twempest.git``
-4. Install dependencies:
+3. Install dependencies:
    ``pip install -r requirements.txt -r requirements-dev.txt -r requirements-test.txt``
-5. Install the project in development mode: ``./setup.py develop``
-6. Run the unit tests to make sure everything is copacetic:
+4. Install the project in development mode: ``./setup.py develop``
+5. Run the unit tests to make sure everything is copacetic:
    ``./setup.py test``
-7. Pour a snifter of Château de Montifaud and light up a Laranja Reserva
+6. Pour a snifter of Château de Montifaud and light up a Laranja Reserva
    Toro.
 
-*README.md generated February 10, 2017*
+*README.md generated February 16, 2017*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
