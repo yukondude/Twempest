@@ -64,8 +64,8 @@ Development Setup
 6. Pour a snifter of Château de Montifaud and light up a Laranja Reserva
    Toro.
 
-Command Options
----------------
+Usage
+-----
 
 ::
 
