@@ -49,4 +49,22 @@ On *NIX, you will first need to install Python 3.3 (or higher) using your prefer
  1. Run the unit tests to make sure everything is copacetic: `./setup.py test`
  1. Pour a snifter of Château de Montifaud and light up a Laranja Reserva Toro.
 
+## Command Options
+
+```
+Usage: twempest [OPTIONS]
+
+  Download a sequence of recent Twitter tweets and convert these, via
+  template, to text format.
+
+Options:
+  -c, --config-path TEXT  Twempest configuration directory path. The
+                          twempest.conf file must exist in this location.
+                          [default: ~/.twempest]
+  -@, --replies           Include @replies in the list of retrieved tweets.
+  -r, --retweets          Include retweets in the list of retrieved tweets.
+  -V, --version           Show version and exit.
+  -h, --help              Show this message and exit.
+```
+
 *README.md generated February 16, 2017*

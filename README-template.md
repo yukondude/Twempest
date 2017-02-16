@@ -49,4 +49,10 @@ On *NIX, you will first need to install Python 3.3 (or higher) using your prefer
  1. Run the unit tests to make sure everything is copacetic: `./setup.py test`
  1. Pour a snifter of Château de Montifaud and light up a Laranja Reserva Toro.
 
+## Command Options
+
+```
+@@HELPTEXT@@
+```
+
 *README.md generated @@TODAY@@*

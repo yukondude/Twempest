@@ -7,6 +7,7 @@
 
 import datetime
 import os
+import subprocess
 
 import twempest
 
@@ -22,6 +23,9 @@ if __name__ == '__main__':
 
     readme = readme.replace("@@TODAY@@", today)
     readme = readme.replace("@@VERSION@@", version)
+
+    help_text = subprocess.check_output(["twempest", "--help"]).decode("utf-8").strip()
+    readme = readme.replace("@@HELPTEXT@@", help_text)
 
     with open(os.path.join(here, "README.md"), "w") as f:
         f.write(readme)
