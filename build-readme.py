@@ -27,5 +27,10 @@ if __name__ == '__main__':
     help_text = subprocess.check_output(["twempest", "--help"]).decode("utf-8").strip()
     readme = readme.replace("@@HELPTEXT@@", help_text)
 
+    with open("twempest.config.sample", 'r') as f:
+        config_text = f.read().strip()
+
+    readme = readme.replace("@@CONFIGTEXT@@", config_text)
+
     with open(os.path.join(here, "README.md"), "w") as f:
         f.write(readme)

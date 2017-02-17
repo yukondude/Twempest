@@ -50,9 +50,10 @@ On *NIX, you will first need to install Python 3.3 (or higher) using your prefer
  1. Pour a snifter of Château de Montifaud and light up a Laranja Reserva Toro.
 
 ## Usage
+Run `twempest --help` to view the usage instructions:
 
 ```
-Usage: twempest [OPTIONS]
+Usage: twempest [OPTIONS] TEMPLATE
 
   Download a sequence of recent Twitter tweets and convert these, via
   template, to text format.
@@ -67,4 +68,39 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-*README.md generated February 16, 2017*
+## Sample Configuration
+Contents of `twempest.config.sample`:
+
+```
+# Sample Twempest configuration file. See https://github.com/yukondude/Twempest
+# for details. Save this to ~/.twempest/twempest.config as the default
+# configuration whenever twempest is run, or save it somewhere convenient as
+# twempest.config and reference it via the -c/--config-path command-line switch
+# option.
+
+[twempest]
+# Most twempest long-form command-line switches may be used here (excluding the
+# leading double-dash). The obvious exceptions would include --config-path,
+# --help, and --version, but go ahead and try them if you like. The defaults
+# are shown below, commented out. See the --help output for details.
+
+# replies = false
+# retweets = false
+
+[twitter]
+# Visit https://apps.twitter.com/ to generate these keys, secrets, tokens, and
+# token secrets. Secret tokens? Token keys? Secret secrets?
+consumer_key=
+consumer_secret=
+access_token=
+access_token_secret=
+```
+
+## Sample Template
+A simple template to render a tweet as Markdown text (`twempest.template.sample`):
+
+```
+@@TEMPLATETEXT@@
+```
+
+*README.md generated February 17, 2017*

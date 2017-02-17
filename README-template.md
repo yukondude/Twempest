@@ -50,9 +50,24 @@ On *NIX, you will first need to install Python 3.3 (or higher) using your prefer
  1. Pour a snifter of Château de Montifaud and light up a Laranja Reserva Toro.
 
 ## Usage
+Run `twempest --help` to view the usage instructions:
 
 ```
 @@HELPTEXT@@
+```
+
+## Sample Configuration
+Contents of `twempest.config.sample`:
+
+```
+@@CONFIGTEXT@@
+```
+
+## Sample Template
+A simple template to render a tweet as Markdown text (`twempest.template.sample`):
+
+```
+@@TEMPLATETEXT@@
 ```
 
 *README.md generated @@TODAY@@*
