@@ -72,6 +72,7 @@ def show_version(ctx, param, value):
 @click.option("--" + CONFIG_OPTIONS['replies'].setting, "-@", is_flag=True, help="Include @replies in the list of retrieved tweets.")
 @click.option("--" + CONFIG_OPTIONS['retweets'].setting, "-r", is_flag=True, help="Include retweets in the list of retrieved tweets.")
 @click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
+@click.argument("template", type=click.File('r'))
 def twempest(**kwargs):
     """ Download a sequence of recent Twitter tweets and convert these, via template, to text format.
     """
