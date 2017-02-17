@@ -26,7 +26,7 @@ CONFIG_OPTIONS = {
 
 def choose_config_path(cli_config_path):
     """ Choose the most likely configuration path from, in order: the given path, the default path, and the path of this module. To be
-        valid, the config path must contain a twempest.conf file.
+        valid, the config path must contain a twempest.conf file and the directory must be writable.
     """
     # Using keys of OrderedDict simulates an OrderedSet type.
     possible_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None)
@@ -35,10 +35,10 @@ def choose_config_path(cli_config_path):
     for possible_path in possible_paths:
         possible_config_path = os.path.join(possible_path, CONFIG_FILE_NAME)
 
-        if os.path.isfile(possible_config_path) and os.access(possible_config_path, os.R_OK):
+        if os.path.isfile(possible_config_path) and os.access(possible_config_path, os.R_OK) and os.access(possible_path, os.W_OK):
             return possible_path
 
-    raise click.ClickException("Could not find readable twempest.conf configuration file in path(s): '{}'"
+    raise click.ClickException("Could not find readable twempest.conf configuration file in writable directory path(s): '{}'"
                                .format("', '".join(possible_paths.keys())))
 
 
