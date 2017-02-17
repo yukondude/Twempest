@@ -88,11 +88,11 @@ def twempest(**kwargs):
     include_replies = choose_config_setting(setting='replies', options=kwargs, config=twempest_config, is_flag=True)
     include_retweets = choose_config_setting('retweets', kwargs, twempest_config, True)
 
-    public_tweets = api.user_timeline(count=50, include_rts=include_retweets)
+    tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
 
-    for tweet in public_tweets:
+    for tweet in reversed(tweets):
         try:
-            if not include_replies and tweet.in_reply_to_status_id:
+            if not include_replies and tweet.in_reply_to_status_id and tweet.text[0] == '@':
                 continue
 
             print(tweet.id, tweet.created_at, tweet.text)
