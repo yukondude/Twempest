@@ -12,7 +12,7 @@ import click
 import tweepy
 
 
-CONFIG_FILE_NAME = "twempest.conf"
+CONFIG_FILE_NAME = "twempest.config"
 DEFAULT_CONFIG_PATH = "~/.twempest"
 
 ConfigOption = collections.namedtuple('ConfigOption', "setting default")
@@ -25,12 +25,13 @@ CONFIG_OPTIONS = {
 
 
 def choose_config_path(cli_config_path):
-    """ Choose the most likely configuration path from, in order: the given path, the default path, and the path of this module. To be
+    """ Choose the most likely configuration path from, in order: the given path, the default path, and the current working directory. To be
         valid, the config path must contain a twempest.conf file and the directory must be writable.
     """
     # Using keys of OrderedDict simulates an OrderedSet type.
-    possible_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None)
-                                              for p in (cli_config_path, DEFAULT_CONFIG_PATH, os.path.dirname(os.path.realpath(__file__)))])
+    possible_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None) for p in (cli_config_path,
+                                                                                                       DEFAULT_CONFIG_PATH,
+                                                                                                       ".")])
 
     for possible_path in possible_paths:
         possible_config_path = os.path.join(possible_path, CONFIG_FILE_NAME)
