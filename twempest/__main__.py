@@ -9,6 +9,7 @@ import configparser
 import os
 
 import click
+import jinja2
 import tweepy
 
 
@@ -90,13 +91,21 @@ def twempest(**kwargs):
     include_replies = choose_config_setting(setting='replies', options=kwargs, config=twempest_config, is_flag=True)
     include_retweets = choose_config_setting('retweets', kwargs, twempest_config, True)
 
+    template = jinja2.Template(kwargs['template'].read())
+
     tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
 
+    i = 0
     for tweet in reversed(tweets):
         try:
             if not include_replies and tweet.in_reply_to_status_id and tweet.text[0] == '@':
                 continue
 
-            print(tweet.id, tweet.created_at, tweet.text)
+            print(template.render(tweet=tweet))
+            print()
         except AttributeError:
             print(tweet.id, "NOPE")
+
+        i += 1
+        if i > 3:
+            break
