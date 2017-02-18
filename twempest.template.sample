@@ -1,0 +1,6 @@
+#{{ tweet.text|truncate(80, False) }}
+Tweeted by: {{ tweet.user.screen_name }}
+Tweeted at: {{ tweet.created_at }}
+Tweet ID: {{ tweet.id }}
+Tweet Entities: {{ tweet.entities }}
+{{ tweet.text }}
