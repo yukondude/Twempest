@@ -1,8 +1,7 @@
 # Sample Twempest configuration file. See https://github.com/yukondude/Twempest
 # for details. Save this to ~/.twempest/twempest.config as the default
 # configuration whenever twempest is run, or save it somewhere convenient as
-# twempest.config and reference it via the -c/--config-path command-line switch
-# option.
+# twempest.config and reference it via the -c/--config-path command-line switch.
 
 [twempest]
 # Most twempest long-form command-line switches may be used here (excluding the
