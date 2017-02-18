@@ -107,9 +107,8 @@ def twempest(**kwargs):
 
             print(template.render(tweet=tweet))
             print()
-        except AttributeError:
-            raise
-            print(tweet.id, "NOPE")
+        except AttributeError as e:
+            print(tweet.id, "NOPE", str(e))
 
         i += 1
         if i > 9:
