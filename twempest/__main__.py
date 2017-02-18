@@ -12,6 +12,8 @@ import click
 import jinja2
 import tweepy
 
+from twempest.filters import detweet
+
 
 CONFIG_FILE_NAME = "twempest.config"
 DEFAULT_CONFIG_PATH = "~/.twempest"
@@ -91,7 +93,9 @@ def twempest(**kwargs):
     include_replies = choose_config_setting(setting='replies', options=kwargs, config=twempest_config, is_flag=True)
     include_retweets = choose_config_setting('retweets', kwargs, twempest_config, True)
 
-    template = jinja2.Template(kwargs['template'].read())
+    env = jinja2.Environment()
+    env.filters['detweet'] = detweet
+    template = env.from_string(kwargs['template'].read())
 
     tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
 
@@ -104,8 +108,9 @@ def twempest(**kwargs):
             print(template.render(tweet=tweet))
             print()
         except AttributeError:
+            raise
             print(tweet.id, "NOPE")
 
         i += 1
-        if i > 3:
+        if i > 9:
             break
