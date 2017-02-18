@@ -32,5 +32,10 @@ if __name__ == '__main__':
 
     readme = readme.replace("@@CONFIGTEXT@@", config_text)
 
+    with open("twempest.template.sample", 'r') as f:
+        config_text = f.read().strip()
+
+    readme = readme.replace("@@TEMPLATETEXT@@", config_text)
+
     with open(os.path.join(here, "README.md"), "w") as f:
         f.write(readme)

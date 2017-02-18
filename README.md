@@ -75,8 +75,7 @@ Contents of `twempest.config.sample`:
 # Sample Twempest configuration file. See https://github.com/yukondude/Twempest
 # for details. Save this to ~/.twempest/twempest.config as the default
 # configuration whenever twempest is run, or save it somewhere convenient as
-# twempest.config and reference it via the -c/--config-path command-line switch
-# option.
+# twempest.config and reference it via the -c/--config-path command-line switch.
 
 [twempest]
 # Most twempest long-form command-line switches may be used here (excluding the
@@ -100,7 +99,14 @@ access_token_secret=
 A simple template to render a tweet as Markdown text (`twempest.template.sample`):
 
 ```
-@@TEMPLATETEXT@@
+#{{ tweet.text|detweet(tweet)|truncate(80, False) }}
+Tweeted by: {{ tweet.user.screen_name }}
+Tweeted at: {{ tweet.created_at }}
+Tweet ID: {{ tweet.id }}
+Tweet Entities:
+{{ tweet.entities|pprint }}
+
+{{ tweet.text }}
 ```
 
-*README.md generated February 17, 2017*
+*README.md generated February 18, 2017*

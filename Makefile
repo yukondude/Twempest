@@ -8,7 +8,7 @@ README.rst: README.md
 	pandoc -f markdown -t rst -o README.rst README.tmp
 	rm -f README.tmp
 
-README.md: README-template.md twempest/__init__.py
+README.md: README-template.md twempest.config.sample twempest.template.sample twempest/__init__.py
 	./build-readme.py
 
 clean:
