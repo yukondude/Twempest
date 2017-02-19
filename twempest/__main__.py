@@ -18,13 +18,35 @@ from twempest.filters import detweet
 CONFIG_FILE_NAME = "twempest.config"
 DEFAULT_CONFIG_PATH = "~/.twempest"
 
-ConfigOption = collections.namedtuple('ConfigOption', "setting default")
+ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
 
 CONFIG_OPTIONS = {
-    'replies': ConfigOption(setting='replies', default=False),
-    'retweets': ConfigOption('retweets', False),
-    'template': ConfigOption('template', None),
+    'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
+                                help="The file name (template tags allowed) for the rendered tweets. "
+                                     "If omitted, tweets will be rendered to STDOUT."),
+    'render-path': ConfigOption('p', ".", True, False, "The directory path to write the rendered tweets."),
+    'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
+    'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
 }
+
+
+def choose_config_option_values(options, cli_args, config):
+    """ For each of the options given, choose a value from, in order: the CLI switch option, the config file, the CONFIG_OPTIONS default.
+        Return the option values in a tuple.
+    """
+    config_values = []
+
+    for option in options:
+        config_option = CONFIG_OPTIONS[option]
+        config_func = config.getboolean if config_option.is_flag else config.get
+
+        if config_option.is_flag and not cli_args.get(option, False):
+            # Ignore false CLI flags so that they don't mask config file or option defaults.
+            config_values.append(config_func(option, config_option.default))
+        else:
+            config_values.append(cli_args.get(option, config_func(option, config_option.default)))
+
+    return tuple(config_values)
 
 
 def choose_config_path(cli_config_path):
@@ -46,16 +68,22 @@ def choose_config_path(cli_config_path):
                                .format("', '".join(possible_paths.keys())))
 
 
-def choose_config_setting(setting, options, config, is_flag=False):
-    """ Choose the configuration setting from, in order: the CLI switch option, the config file, the CONFIG_OPTIONS default.
+def config_options(fn):
+    """ Return a decorator with all of the CONFIG_OPTIONS items as a chain of click.option decorators, sorted in ascending order by option
+        name.
     """
-    config_func = config.getboolean if is_flag else config.get
+    def option_decorators(inner_fn):
+        """ Return the decorator chain wrapped around the given function."""
+        decorators = inner_fn
 
-    if is_flag and not options.get(setting, False):
-        # Ignore false CLI flags so that they don't mask config file or option defaults.
-        return config_func(CONFIG_OPTIONS[setting].setting, CONFIG_OPTIONS[setting].default)
+        for option, config_option in sorted(CONFIG_OPTIONS.items(), reverse=True):
+            decorator = click.option("--" + option, "-" + config_option.short, default=config_option.default,
+                                     show_default=config_option.show_default, is_flag=config_option.is_flag, help=config_option.help)
+            decorators = decorator(decorators)
 
-    return options.get(setting, config_func(CONFIG_OPTIONS[setting].setting, CONFIG_OPTIONS[setting].default))
+        return decorators
+
+    return option_decorators(fn)
 
 
 # noinspection PyUnusedLocal
@@ -73,12 +101,11 @@ def show_version(ctx, param, value):
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--config-path", "-c", default=DEFAULT_CONFIG_PATH, show_default=True,
               help="Twempest configuration directory path. The twempest.conf file must exist in this location.")
-@click.option("--" + CONFIG_OPTIONS['replies'].setting, "-@", is_flag=True, help="Include @replies in the list of retrieved tweets.")
-@click.option("--" + CONFIG_OPTIONS['retweets'].setting, "-r", is_flag=True, help="Include retweets in the list of retrieved tweets.")
+@config_options
 @click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
 @click.argument("template", type=click.File('r'))
 def twempest(**kwargs):
-    """ Download a sequence of recent Twitter tweets and convert these, via template, to text format.
+    """ Download a sequence of recent Twitter tweets and convert these, via the given template file, to text format.
     """
     config = configparser.ConfigParser()
     config_path = choose_config_path(kwargs['config_path'])
@@ -90,8 +117,8 @@ def twempest(**kwargs):
     api = tweepy.API(auth)
 
     twempest_config = config['twempest']
-    include_replies = choose_config_setting(setting='replies', options=kwargs, config=twempest_config, is_flag=True)
-    include_retweets = choose_config_setting('retweets', kwargs, twempest_config, True)
+    include_replies, include_retweets, render_file, render_path = \
+        choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path'), cli_args=kwargs, config=twempest_config)
 
     env = jinja2.Environment()
     env.filters['detweet'] = detweet
