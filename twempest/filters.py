@@ -28,16 +28,21 @@ def scrub(ctx, text):
     return text
 
 
-SLUG_1_RE = re.compile(r"[^\w\s-]")
-SLUG_2_RE = re.compile(r"[-\s]+")
+WEIRD_CHARACTERS_RE = re.compile(r"[^\w\s-]")
+MULTIPLE_DELIMITERS_RE = re.compile(r"[-\s]+")
 
 
 @jinja2.contextfilter
 def slugify(ctx, text):
     """ Transform the given text into a suitable file name of no more than 80 characters that is also scrubbed of URLs and hashtags.
+
+        The bulk of this method is adapted from the Django project utils/text.py source code file:
+        https://github.com/django/django/blob/master/django/utils/text.py
+
+        Copyright (c) Django Software Foundation and individual contributors. All rights reserved.
+        License: https://github.com/django/django/blob/master/LICENSE
     """
-    # TODO: properly acknowledge Django code
     slug = scrub(ctx, text)
     slug = unicodedata.normalize('NFKD', slug).encode('ascii', 'ignore').decode('ascii')
-    slug = SLUG_1_RE.sub('', slug).strip().lower()[:80]
-    return SLUG_2_RE.sub('-', slug)
+    slug = WEIRD_CHARACTERS_RE.sub('', slug).strip().lower()[:80]
+    return MULTIPLE_DELIMITERS_RE.sub('-', slug).strip('-')
