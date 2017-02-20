@@ -12,7 +12,7 @@ import click
 import jinja2
 import tweepy
 
-from twempest.filters import scrub
+from twempest.filters import scrub, slugify
 
 
 CONFIG_FILE_NAME = "twempest.config"
@@ -37,14 +37,15 @@ def choose_config_option_values(options, cli_args, config):
     config_values = []
 
     for option in options:
+        option_arg = option.replace('-', '_')
         config_option = CONFIG_OPTIONS[option]
         config_func = config.getboolean if config_option.is_flag else config.get
 
-        if config_option.is_flag and not cli_args.get(option, False):
+        if config_option.is_flag and not cli_args.get(option_arg, False):
             # Ignore false CLI flags so that they don't mask config file or option defaults.
             config_values.append(config_func(option, config_option.default))
         else:
-            config_values.append(cli_args.get(option, config_func(option, config_option.default)))
+            config_values.append(cli_args.get(option_arg, config_func(option, config_option.default)))
 
     return tuple(config_values)
 
@@ -122,7 +123,10 @@ def twempest(**kwargs):
 
     env = jinja2.Environment()
     env.filters['scrub'] = scrub
+    env.filters['slugify'] = slugify
     template = env.from_string(kwargs['template'].read())
+
+    render_file_template = env.from_string(render_file)
 
     tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
 
@@ -133,6 +137,7 @@ def twempest(**kwargs):
                 continue
 
             print(template.render(tweet=tweet))
+            print(render_file_template.render(tweet=tweet))
             print()
         except AttributeError as e:
             print(tweet.id, "NOPE", str(e))
