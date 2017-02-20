@@ -65,8 +65,8 @@ Options:
   -f, --render-file TEXT  The file name (template tags allowed) for the
                           rendered tweets. If omitted, tweets will be rendered
                           to STDOUT.
-  -p, --render-path TEXT  The directory path to write the rendered tweets.
-                          [default: .]
+  -p, --render-path TEXT  The directory path (template tags allowed) to write
+                          the rendered tweets.  [default: .]
   -@, --replies           Include @replies in the list of retrieved tweets.
   -r, --retweets          Include retweets in the list of retrieved tweets.
   -V, --version           Show version and exit.

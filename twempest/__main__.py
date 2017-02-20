@@ -24,7 +24,7 @@ CONFIG_OPTIONS = {
     'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
                                 help="The file name (template tags allowed) for the rendered tweets. "
                                      "If omitted, tweets will be rendered to STDOUT."),
-    'render-path': ConfigOption('p', ".", True, False, "The directory path to write the rendered tweets."),
+    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweets."),
     'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
     'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
 }
@@ -76,7 +76,8 @@ def config_options(fn):
         name.
     """
     def option_decorators(inner_fn):
-        """ Return the decorator chain wrapped around the given function."""
+        """ Return the decorator chain wrapped around the given function.
+        """
         decorators = inner_fn
 
         for option, config_option in sorted(CONFIG_OPTIONS.items(), reverse=True):
@@ -129,6 +130,7 @@ def twempest(**kwargs):
     template = env.from_string(kwargs['template'].read())
 
     render_file_template = env.from_string(render_file) if render_file else None
+    render_path_template = env.from_string(render_path)
 
     tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
 
@@ -139,6 +141,8 @@ def twempest(**kwargs):
                 continue
 
             print(template.render(tweet=tweet))
+            print()
+            print(render_path_template.render(tweet=tweet))
 
             if render_file_template:
                 print(render_file_template.render(tweet=tweet))
