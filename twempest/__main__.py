@@ -12,7 +12,7 @@ import click
 import jinja2
 import tweepy
 
-from twempest.filters import detweet
+from twempest.filters import scrub
 
 
 CONFIG_FILE_NAME = "twempest.config"
@@ -121,7 +121,7 @@ def twempest(**kwargs):
         choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path'), cli_args=kwargs, config=twempest_config)
 
     env = jinja2.Environment()
-    env.filters['detweet'] = detweet
+    env.filters['scrub'] = scrub
     template = env.from_string(kwargs['template'].read())
 
     tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())

@@ -1,4 +1,4 @@
-#{{ tweet.text|detweet(tweet)|truncate(80, False) }}
+#{{ tweet.text|scrub|truncate(80, False) }}
 Tweeted by: {{ tweet.user.screen_name }}
 Tweeted at: {{ tweet.created_at }}
 Tweet ID: {{ tweet.id }}

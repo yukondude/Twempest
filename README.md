@@ -55,13 +55,18 @@ Run `twempest --help` to view the usage instructions:
 ```
 Usage: twempest [OPTIONS] TEMPLATE
 
-  Download a sequence of recent Twitter tweets and convert these, via
-  template, to text format.
+  Download a sequence of recent Twitter tweets and convert these, via the
+  given template file, to text format.
 
 Options:
   -c, --config-path TEXT  Twempest configuration directory path. The
                           twempest.conf file must exist in this location.
                           [default: ~/.twempest]
+  -f, --render-file TEXT  The file name (template tags allowed) for the
+                          rendered tweets. If omitted, tweets will be rendered
+                          to STDOUT.
+  -p, --render-path TEXT  The directory path to write the rendered tweets.
+                          [default: .]
   -@, --replies           Include @replies in the list of retrieved tweets.
   -r, --retweets          Include retweets in the list of retrieved tweets.
   -V, --version           Show version and exit.
@@ -99,7 +104,7 @@ access_token_secret=
 A simple template to render a tweet as Markdown text (`twempest.template.sample`):
 
 ```
-#{{ tweet.text|detweet(tweet)|truncate(80, False) }}
+#{{ tweet.text|scrub|truncate(80, False) }}
 Tweeted by: {{ tweet.user.screen_name }}
 Tweeted at: {{ tweet.created_at }}
 Tweet ID: {{ tweet.id }}
@@ -109,4 +114,4 @@ Tweet Entities:
 {{ tweet.text }}
 ```
 
-*README.md generated February 18, 2017*
+*README.md generated February 19, 2017*
