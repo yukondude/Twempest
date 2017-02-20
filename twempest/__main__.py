@@ -44,6 +44,8 @@ def choose_config_option_values(options, cli_args, config):
         if config_option.is_flag and not cli_args.get(option_arg, False):
             # Ignore false CLI flags so that they don't mask config file or option defaults.
             config_values.append(config_func(option, config_option.default))
+        elif cli_args.get(option_arg) is None:
+            config_values.append(config_func(option, config_option.default))
         else:
             config_values.append(cli_args.get(option_arg, config_func(option, config_option.default)))
 
@@ -108,7 +110,7 @@ def show_version(ctx, param, value):
 def twempest(**kwargs):
     """ Download a sequence of recent Twitter tweets and convert these, via the given template file, to text format.
     """
-    config = configparser.ConfigParser()
+    config = configparser.RawConfigParser(allow_no_value=True)
     config_path = choose_config_path(kwargs['config_path'])
     config.read(os.path.join(config_path, CONFIG_FILE_NAME))
 
@@ -126,7 +128,7 @@ def twempest(**kwargs):
     env.filters['slugify'] = slugify
     template = env.from_string(kwargs['template'].read())
 
-    render_file_template = env.from_string(render_file)
+    render_file_template = env.from_string(render_file) if render_file else None
 
     tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
 
@@ -137,7 +139,10 @@ def twempest(**kwargs):
                 continue
 
             print(template.render(tweet=tweet))
-            print(render_file_template.render(tweet=tweet))
+
+            if render_file_template:
+                print(render_file_template.render(tweet=tweet))
+
             print()
         except AttributeError as e:
             print(tweet.id, "NOPE", str(e))
