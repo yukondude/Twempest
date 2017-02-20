@@ -108,8 +108,24 @@ Contents of ``twempest.config.sample``:
     # --help, and --version, but go ahead and try them if you like. The defaults
     # are shown below, commented out. See the --help output for details.
 
-    # replies = false
-    # retweets = false
+    # Render tweets to STDOUT.
+    # render-file=
+    # Because template expressions are allowed for this option, you can generate
+    # rendered file names using any of the tweet context variable contents. For
+    # example:
+    # render-file={{tweet.created_at.strftime('%Y%m%d')}}-{{tweet.text|slugify}}.md
+    # would render to something like the following: 20170214-be-my-valentine.md
+    # It's a good idea to use the slugify filter for any text to avoid characters
+    # that are not allowed for file names.
+
+    # Write rendered tweets to the current directory.
+    # render-path=.
+
+    # Exclude @replies from the list of retrieved tweets.
+    # replies=false
+
+    # Exclude retweets from the list of retrieved tweets.
+    # retweets=false
 
     [twitter]
     # Visit https://apps.twitter.com/ to generate these keys, secrets, tokens, and
@@ -127,7 +143,7 @@ A simple template to render a tweet as Markdown text
 
 ::
 
-    #{{ tweet.text|scrub|truncate(80, False) }}
+    #{{ tweet.text|scrub|truncate(80,False) }}
     Tweeted by: {{ tweet.user.screen_name }}
     Tweeted at: {{ tweet.created_at }}
     Tweet ID: {{ tweet.id }}
@@ -136,7 +152,7 @@ A simple template to render a tweet as Markdown text
 
     {{ tweet.text }}
 
-*README.md generated February 19, 2017*
+*README.md generated February 20, 2017*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
