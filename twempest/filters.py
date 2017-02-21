@@ -10,6 +10,12 @@ import unicodedata
 import jinja2
 
 
+def isodate(date):
+    """ Return the given date formatted as the ISO 8601 extended YYYY-MM-DD format.
+    """
+    return date.strftime('%Y-%m-%d')
+
+
 @jinja2.contextfilter
 def scrub(ctx, text):
     """ Remove URLs and hashtag '#' prefixes from the given text, using the contents of the context's tweet status object as a guide.

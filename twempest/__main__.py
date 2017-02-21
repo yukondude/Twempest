@@ -12,7 +12,7 @@ import click
 import jinja2
 import tweepy
 
-from twempest.filters import scrub, slugify
+from twempest.filters import isodate, scrub, slugify
 
 
 CONFIG_FILE_NAME = "twempest.config"
@@ -125,6 +125,7 @@ def twempest(**kwargs):
         choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path'), cli_args=kwargs, config=twempest_config)
 
     env = jinja2.Environment()
+    env.filters['isodate'] = isodate
     env.filters['scrub'] = scrub
     env.filters['slugify'] = slugify
     template = env.from_string(kwargs['template'].read())
