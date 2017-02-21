@@ -64,10 +64,27 @@ Contents of `twempest.config.sample`:
 ```
 
 ## Sample Template
-A simple template to render a tweet as Markdown text (`twempest.template.sample`):
+A simple template to render a tweet as Markdown text suitable for Jekyll posts(`twempest.template.sample`):
 
 ```
 @@TEMPLATETEXT@@
 ```
+
+## Template Filters
+
+### `delink`
+Remove URLs and hashtag '#' prefixes.
+
+### `isodate`
+Format a date using the ISO 8601 extended YYYY-MM-DD format.
+
+### `reimage(tag_format)`
+Remove image URLs and append them to the end, using the template tag_format with variables `alt` and `url`.
+
+### `relink(tag_format)`
+Replace non-image URLs and hashtag links, using the template tag_format with variables `text` and `url`.
+
+### `slugify`
+Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
 *README.md generated @@TODAY@@*
