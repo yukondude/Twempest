@@ -4,9 +4,11 @@
 # This file is part of Twempest. Copyright 2017 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public License, version 3.
 # Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
+import inspect
 import os
 import re
 import unicodedata
+import sys
 
 import jinja2
 
@@ -101,4 +103,5 @@ def slugify(ctx, text):
     return MULTIPLE_DELIMITERS_RE.sub('-', slug).strip('-')
 
 
-ALL_FILTERS = (delink, isodate, reimage, relink, slugify)
+# Dictionary {name: function} of all filter functions in this module.
+ALL_FILTERS = {m[0]: m[1] for m in inspect.getmembers(sys.modules[__name__]) if inspect.isfunction(m[1])}

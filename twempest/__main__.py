@@ -126,7 +126,7 @@ def twempest(**kwargs):
         choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path'), cli_args=kwargs, config=twempest_config)
 
     env = jinja2.Environment()
-    env.filters.update({f.__name__: f for f in ALL_FILTERS})
+    env.filters.update(ALL_FILTERS)
     template = env.from_string(kwargs['template'].read())
 
     render_file_template = env.from_string(render_file) if render_file else None
