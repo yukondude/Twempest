@@ -110,6 +110,7 @@ def show_version(ctx, param, value):
 @click.argument("template", type=click.File('r'))
 def twempest(**kwargs):
     """ Download a sequence of recent Twitter tweets and convert these, via the given template file, to text format.
+        Twempest uses the Jinja template syntax throughout: http://jinja.pocoo.org/docs/2.9/templates/
     """
     config = configparser.RawConfigParser(allow_no_value=True)
     config_path = choose_config_path(kwargs['config_path'])
