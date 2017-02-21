@@ -105,16 +105,15 @@ Contents of ``twempest.config.sample``:
     [twempest]
     # Most twempest long-form command-line switches may be used here (excluding the
     # leading double-dash). The obvious exceptions would include --config-path,
-    # --help, and --version, but go ahead and try them if you like. The defaults
-    # are shown below, commented out. See the --help output for details.
+    # --help, and --version, but go ahead and try them if you like. The commented-
+    # out defaults are shown below. See the --help output for details.
 
     # Render tweets to STDOUT.
     # render-file=
     # Because template expressions are allowed for this option, you can generate
     # rendered file names using any of the tweet context variable contents. For
-    # example:
-    # render-file={{tweet.created_at|isodate}}-{{tweet.text|slugify}}.md
-    # might render to something like the following: 2017-02-14-be-my-valentine.md
+    # example: render-file={{tweet.created_at|isodate}}-{{tweet.text|slugify}}.md
+    # might render to something like: 2017-02-14-be-my-valentine.md
     # Use the slugify filter to eliminate any non-filesystem-safe characters from
     # the tweet text.
 
