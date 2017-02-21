@@ -138,7 +138,7 @@ Sample Template
 ---------------
 
 A simple template to render a tweet as Markdown text suitable for Jekyll
-posts(\ ``twempest.template.sample``):
+posts (``twempest.template.sample``):
 
 ::
 
@@ -161,19 +161,19 @@ Remove URLs and hashtag '#' prefixes.
 ``isodate``
 ~~~~~~~~~~~
 
-Format a date using the ISO 8601 extended YYYY-MM-DD format.
+Format a date as YYYY-MM-DD.
 
 ``reimage(tag_format)``
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Remove image URLs and append them to the end, using the template
-tag\_format with variables ``alt`` and ``url``.
+tag\_format with variables ``alt`` and ``url`` to format each.
 
 ``relink(tag_format)``
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Replace non-image URLs and hashtag links, using the template tag\_format
-with variables ``text`` and ``url``.
+with variables ``text`` and ``url`` to format each.
 
 ``slugify``
 ~~~~~~~~~~~
