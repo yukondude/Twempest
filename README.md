@@ -124,10 +124,8 @@ title: {{ tweet.text|delink|truncate(80,False) }}
 author: {{ tweet.user.screen_name }}
 date: {{ tweet.created_at }}
 tweet_id: {{ tweet.id }}
-entities:
-{{ tweet.entities|pprint }}
 ---
-{{ tweet.text|relink("[{{text}}]({{url}})") }}
+{{ tweet.text|relink("[{{text}}]({{url}})")|reimage("![{{alt}}]({{url}})") }}
 ```
 
 *README.md generated February 21, 2017*

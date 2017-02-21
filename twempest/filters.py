@@ -4,6 +4,7 @@
 # This file is part of Twempest. Copyright 2017 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public License, version 3.
 # Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
+import os
 import re
 import unicodedata
 
@@ -35,12 +36,36 @@ def isodate(date):
 
 
 @jinja2.contextfilter
-def relink(ctx, text, link_format):
-    """ Add URLs and hashtag links to the given text, following the template link_format with variables 'text' and 'url', using the
+def reimage(ctx, text, tag_format):
+    """ Remove image URLs and append them to the end of the given text, following the template tag_format with variables 'alt' and 'url',
+        using the context's tweet status object to supply the necessary values.
+    """
+    tweet_entities = ctx.parent['tweet'].entities
+    images = []
+
+    for media in (m for m in tweet_entities.get('media', []) if m['type'] == 'photo'):
+        text = text.replace(media['url'], '')
+        image_url = media['media_url_https'] if media['media_url_https'] else media['media_url']
+        # Use the filename without extension for the alt text since there's really nothing better that's available.
+        image_alt = os.path.splitext(os.path.basename(image_url))[0]
+        images.append((image_alt, image_url))
+
+    image_template = jinja2.Template(tag_format)
+    text = text.rstrip()
+
+    for image_alt, image_url in images:
+        text += " " + image_template.render(alt=image_alt, url=image_url)
+
+    return text
+
+
+@jinja2.contextfilter
+def relink(ctx, text, tag_format):
+    """ Add non-image URLs and hashtag links to the given text, following the template tag_format with variables 'text' and 'url', using the
         context's tweet status object to supply the necessary values.
     """
     tweet_entities = ctx.parent['tweet'].entities
-    link_template = jinja2.Template(link_format)
+    link_template = jinja2.Template(tag_format)
 
     for hashtag in tweet_entities.get('hashtags', []):
         hashtag_text = hashtag['text']
@@ -49,6 +74,9 @@ def relink(ctx, text, link_format):
 
     for url in tweet_entities.get('urls', []):
         text = text.replace(url['url'], link_template.render(text=url['display_url'], url=url['expanded_url']))
+
+    for media in (m for m in tweet_entities.get('media', []) if m['type'] != 'photo'):
+        text = text.replace(media['url'], link_template.render(text=url['display_url'], url=url['expanded_url']))
 
     return text
 
@@ -73,4 +101,4 @@ def slugify(ctx, text):
     return MULTIPLE_DELIMITERS_RE.sub('-', slug).strip('-')
 
 
-ALL_FILTERS = (delink, isodate, relink, slugify)
+ALL_FILTERS = (delink, isodate, reimage, relink, slugify)
