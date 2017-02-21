@@ -135,6 +135,7 @@ def twempest(**kwargs):
     tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
 
     i = 0
+
     for tweet in reversed(tweets):
         try:
             if not include_replies and tweet.in_reply_to_status_id and tweet.text[0] == '@':
@@ -152,5 +153,6 @@ def twempest(**kwargs):
             print(tweet.id, "NOPE", str(e))
 
         i += 1
-        if i > 9:
+
+        if i > 10:
             break
