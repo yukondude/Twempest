@@ -6,4 +6,4 @@ tweet_id: {{ tweet.id }}
 entities:
 {{ tweet.entities|pprint }}
 ---
-{{ tweet.text }}
+{{ tweet.text|relink("[{{text}}]({{url}})") }}

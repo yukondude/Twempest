@@ -150,7 +150,7 @@ A simple template to render a tweet as Markdown text
     entities:
     {{ tweet.entities|pprint }}
     ---
-    {{ tweet.text }}
+    {{ tweet.text|relink("[{{text}}]({{url}})") }}
 
 *README.md generated February 21, 2017*
 

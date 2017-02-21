@@ -127,7 +127,7 @@ tweet_id: {{ tweet.id }}
 entities:
 {{ tweet.entities|pprint }}
 ---
-{{ tweet.text }}
+{{ tweet.text|relink("[{{text}}]({{url}})") }}
 ```
 
 *README.md generated February 21, 2017*

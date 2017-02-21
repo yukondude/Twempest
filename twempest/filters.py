@@ -34,6 +34,25 @@ def isodate(date):
     return date.strftime('%Y-%m-%d')
 
 
+@jinja2.contextfilter
+def relink(ctx, text, link_format):
+    """ Add URLs and hashtag links to the given text, following the template link_format with variables 'text' and 'url', using the
+        context's tweet status object to supply the necessary values.
+    """
+    tweet_entities = ctx.parent['tweet'].entities
+    link_template = jinja2.Template(link_format)
+
+    for hashtag in tweet_entities.get('hashtags', []):
+        hashtag_text = hashtag['text']
+        hashtag_url = "https://twitter.com/hashtag/{}".format(hashtag_text.lower())
+        text = text.replace('#' + hashtag_text, link_template.render(text='#' + hashtag_text, url=hashtag_url))
+
+    for url in tweet_entities.get('urls', []):
+        text = text.replace(url['url'], link_template.render(text=url['display_url'], url=url['expanded_url']))
+
+    return text
+
+
 WEIRD_CHARACTERS_RE = re.compile(r"[^\w\s-]")
 MULTIPLE_DELIMITERS_RE = re.compile(r"[-\s]+")
 
@@ -52,3 +71,6 @@ def slugify(ctx, text):
     slug = unicodedata.normalize('NFKD', slug).encode('ascii', 'ignore').decode('ascii')
     slug = WEIRD_CHARACTERS_RE.sub('', slug).strip().lower()
     return MULTIPLE_DELIMITERS_RE.sub('-', slug).strip('-')
+
+
+ALL_FILTERS = (delink, isodate, relink, slugify)

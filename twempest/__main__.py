@@ -12,7 +12,7 @@ import click
 import jinja2
 import tweepy
 
-from twempest.filters import delink, isodate, slugify
+from twempest.filters import ALL_FILTERS
 
 
 CONFIG_FILE_NAME = "twempest.config"
@@ -125,9 +125,7 @@ def twempest(**kwargs):
         choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path'), cli_args=kwargs, config=twempest_config)
 
     env = jinja2.Environment()
-    env.filters['delink'] = delink
-    env.filters['isodate'] = isodate
-    env.filters['slugify'] = slugify
+    env.filters.update({f.__name__: f for f in ALL_FILTERS})
     template = env.from_string(kwargs['template'].read())
 
     render_file_template = env.from_string(render_file) if render_file else None
