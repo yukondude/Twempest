@@ -119,13 +119,14 @@ access_token_secret=
 A simple template to render a tweet as Markdown text (`twempest.template.sample`):
 
 ```
-#{{ tweet.text|scrub|truncate(80,False) }}
-Tweeted by: {{ tweet.user.screen_name }}
-Tweeted at: {{ tweet.created_at }}
-Tweet ID: {{ tweet.id }}
-Tweet Entities:
+---
+title: {{ tweet.text|delink|truncate(80,False) }}
+author: {{ tweet.user.screen_name }}
+date: {{ tweet.created_at }}
+tweet_id: {{ tweet.id }}
+entities:
 {{ tweet.entities|pprint }}
-
+---
 {{ tweet.text }}
 ```
 

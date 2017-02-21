@@ -10,14 +10,8 @@ import unicodedata
 import jinja2
 
 
-def isodate(date):
-    """ Return the given date formatted as the ISO 8601 extended YYYY-MM-DD format.
-    """
-    return date.strftime('%Y-%m-%d')
-
-
 @jinja2.contextfilter
-def scrub(ctx, text):
+def delink(ctx, text):
     """ Remove URLs and hashtag '#' prefixes from the given text, using the contents of the context's tweet status object as a guide.
     """
     tweet_entities = ctx.parent['tweet'].entities
@@ -34,6 +28,12 @@ def scrub(ctx, text):
     return text
 
 
+def isodate(date):
+    """ Return the given date formatted as the ISO 8601 extended YYYY-MM-DD format.
+    """
+    return date.strftime('%Y-%m-%d')
+
+
 WEIRD_CHARACTERS_RE = re.compile(r"[^\w\s-]")
 MULTIPLE_DELIMITERS_RE = re.compile(r"[-\s]+")
 
@@ -42,13 +42,13 @@ MULTIPLE_DELIMITERS_RE = re.compile(r"[-\s]+")
 def slugify(ctx, text):
     """ Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-        The bulk of this method is adapted from the Django project utils/text.py source code file:
+        This function is adapted from the Django project utils/text.py source code file:
         https://github.com/django/django/blob/master/django/utils/text.py
 
         Copyright (c) Django Software Foundation and individual contributors. All rights reserved.
         License: https://github.com/django/django/blob/master/LICENSE
     """
-    slug = scrub(ctx, text)
+    slug = delink(ctx, text)
     slug = unicodedata.normalize('NFKD', slug).encode('ascii', 'ignore').decode('ascii')
     slug = WEIRD_CHARACTERS_RE.sub('', slug).strip().lower()
     return MULTIPLE_DELIMITERS_RE.sub('-', slug).strip('-')
