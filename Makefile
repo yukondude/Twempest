@@ -15,8 +15,11 @@ clean:
 	rm -fr dist/
 	rm -fr build/
 
-build: clean README.rst
+docs: README.rst
 	./build-readme.py
+	@$(MAKE)
+
+build: clean docs
 	@$(MAKE)
 	./setup.py sdist >/dev/null
 	./setup.py bdist_wheel >/dev/null
@@ -28,6 +31,7 @@ bump:
 	ls dist/*.whl | xargs -I{} twine register {}
 	ls dist/*.whl | xargs -I{} twine upload {}
 	ls dist/*.tar.gz | xargs -I{} twine upload {}
-	@echo "Run git tag -a... with the bumped version."
-	@echo "Push to GitHub with git push --followtags"
+	@echo "Commit the changes: git add . ; git commit -m<comment>"
+	@echo "Tag the version: git tag -a<bumpedversion> -m<comment>"
+	@echo "Push to GitHub: git push --follow-tags"
 	@echo "Update homebrew formula version number and SHA."
