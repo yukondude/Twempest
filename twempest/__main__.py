@@ -18,8 +18,8 @@ from twempest.filters import ALL_FILTERS
 CONFIG_FILE_NAME = "twempest.config"
 DEFAULT_CONFIG_PATH = "~/.twempest"
 
+# Collect all configuration options (that may also appear in the config file) here so that they don't have to be duplicated.
 ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
-
 CONFIG_OPTIONS = {
     'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
                                 help="The file name (template tags allowed) for the rendered tweets. "
@@ -28,6 +28,14 @@ CONFIG_OPTIONS = {
     'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
     'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
 }
+
+
+def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access_token_secret):
+    """ Return the Twitter API object for the given authentication credentials.
+    """
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    return tweepy.API(auth)
 
 
 def choose_config_option_values(options, cli_args, config):
@@ -113,13 +121,16 @@ def twempest(**kwargs):
         Twempest uses the Jinja template syntax throughout: http://jinja.pocoo.org/docs/2.9/templates/
     """
     config = configparser.RawConfigParser(allow_no_value=True)
-    config_path = choose_config_path(kwargs['config_path'])
-    config.read(os.path.join(config_path, CONFIG_FILE_NAME))
+    config_path = os.path.join(choose_config_path(kwargs['config_path']), CONFIG_FILE_NAME)
+    config.read(config_path)
 
-    twitter_config = config['twitter']
-    auth = tweepy.OAuthHandler(twitter_config['consumer_key'], twitter_config['consumer_secret'])
-    auth.set_access_token(twitter_config['access_token'], twitter_config['access_token_secret'])
-    api = tweepy.API(auth)
+    try:
+        twitter_config = config['twitter']
+        auth_keys = {k: twitter_config[k] for k in ('consumer_key', 'consumer_secret', 'access_token', 'access_token_secret')}
+        api = authenticate_twitter_api(**auth_keys)
+    except KeyError as e:
+        raise click.ClickException("Could not find required Twitter section or authentication credential {} in '{}'".format(str(e),
+                                                                                                                            config_path))
 
     twempest_config = config['twempest']
     include_replies, include_retweets, render_file, render_path = \
@@ -132,7 +143,10 @@ def twempest(**kwargs):
     render_file_template = env.from_string(render_file) if render_file else None
     render_path_template = env.from_string(render_path)
 
-    tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
+    try:
+        tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
+    except tweepy.TweepError as e:
+        raise click.ClickException(e)
 
     i = 0
 
