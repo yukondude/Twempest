@@ -126,13 +126,16 @@ def twempest(**kwargs):
 
     try:
         twitter_config = config['twitter']
+        twempest_config = config['twempest']
+    except KeyError as e:
+        raise click.ClickException("Could not find required '[{}]' section in '{}'".format(str(e).strip("'"), config_path))
+
+    try:
         auth_keys = {k: twitter_config[k] for k in ('consumer_key', 'consumer_secret', 'access_token', 'access_token_secret')}
         api = authenticate_twitter_api(**auth_keys)
     except KeyError as e:
-        raise click.ClickException("Could not find required Twitter section or authentication credential {} in '{}'".format(str(e),
-                                                                                                                            config_path))
+        raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_path))
 
-    twempest_config = config['twempest']
     include_replies, include_retweets, render_file, render_path = \
         choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path'), cli_args=kwargs, config=twempest_config)
 
