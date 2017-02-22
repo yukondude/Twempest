@@ -12,7 +12,7 @@ import re
 # noinspection PyPackageRequirements
 import pytest
 
-from twempest.filters import delink, isodate, slugify
+from twempest.filters import delink, isodate, reimage, relink, slugify
 
 
 class MockContext:
@@ -57,6 +57,48 @@ def test_delink(tweets):
 ])
 def test_isodate(date, expected):
     assert isodate(date) == expected
+
+
+# noinspection PyShadowingNames
+def test_reimage(tweets):
+    for tweet in tweets:
+        reimaged = reimage(ctx=MockContext(tweet), text=tweet.text, tag_format="@@{{alt}}@@{{url}}@@")
+
+        for media in tweet.entities.get('media', []):
+            image_url = media['media_url_https'] if media['media_url_https'] else media['media_url']
+            image_alt = os.path.splitext(os.path.basename(image_url))[0]
+
+            if media['type'] == 'photo':
+                assert media['url'] not in reimaged
+                assert "@@{}@@{}@@".format(image_alt, image_url) in reimaged
+            else:
+                assert media['url'] in reimaged
+                assert "@@{}@@{}@@".format(image_alt, image_url) not in reimaged
+
+        for url in tweet.entities.get('url', []):
+            assert url['url'] in reimaged
+            assert "@@{}@@{}@@".format(url['display_url'], url['expanded_url']) not in reimaged
+
+
+# noinspection PyShadowingNames
+def test_relink(tweets):
+    for tweet in tweets:
+        relinked = relink(ctx=MockContext(tweet), text=tweet.text, tag_format="@@{{text}}@@{{url}}@@")
+
+        for hashtag in tweet.entities.get('hashtags', []):
+            assert "@@#{}@@https://twitter.com/hashtag/{}@@".format(hashtag['text'], hashtag['text'].lower()) in relinked
+
+        for media in tweet.entities.get('media', []):
+            if media['type'] == 'photo':
+                assert media['url'] in relinked
+                assert "@@{}@@{}@@".format(media['display_url'], media['expanded_url']) not in relinked
+            else:
+                assert media['url'] not in relinked
+                assert "@@{}@@{}@@".format(media['display_url'], media['expanded_url']) in relinked
+
+        for url in tweet.entities.get('url', []):
+            assert url['url'] not in relinked
+            assert "@@{}@@{}@@".format(url['display_url'], url['expanded_url']) in relinked
 
 
 # noinspection PyShadowingNames
