@@ -75,7 +75,7 @@ def test_reimage(tweets):
                 assert media['url'] in reimaged
                 assert "@@{}@@{}@@".format(image_alt, image_url) not in reimaged
 
-        for url in tweet.entities.get('url', []):
+        for url in tweet.entities.get('urls', []):
             assert url['url'] in reimaged
             assert "@@{}@@{}@@".format(url['display_url'], url['expanded_url']) not in reimaged
 
@@ -96,7 +96,7 @@ def test_relink(tweets):
                 assert media['url'] not in relinked
                 assert "@@{}@@{}@@".format(media['display_url'], media['expanded_url']) in relinked
 
-        for url in tweet.entities.get('url', []):
+        for url in tweet.entities.get('urls', []):
             assert url['url'] not in relinked
             assert "@@{}@@{}@@".format(url['display_url'], url['expanded_url']) in relinked
 
