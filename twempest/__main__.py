@@ -18,22 +18,6 @@ from twempest.filters import ALL_FILTERS
 CONFIG_FILE_NAME = "twempest.config"
 DEFAULT_CONFIG_PATH = "~/.twempest"
 
-# Collect all configuration options (that may also appear in the config file) here so that they don't have to be duplicated.
-ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
-CONFIG_OPTIONS = {
-    'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
-                                help="The file name (template tags allowed) for the rendered tweets. "
-                                     "If the file already exists, the rendered tweet will be appended to it. "
-                                     "If omitted, tweets will be rendered to STDOUT."),
-    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
-                                                       "The directory path will be created if it doesn't exist."),
-    'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
-    'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
-    'since-id': ConfigOption('s', None, False, False, "Retrieve tweets that follow this ID in the timeline. "
-                                                      "Required, unless the ID has already been recorded in the config path directory "
-                                                      "after a previous run of Twempest."),
-}
-
 
 def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access_token_secret):
     """ Return the Twitter API object for the given authentication credentials.
@@ -83,23 +67,23 @@ def choose_option_values(options, cli_args, config):
     return option_values
 
 
-def config_options(fn):
+def config_options(options):
     """ Return a decorator with all of the CONFIG_OPTIONS items as a chain of click.option decorators, sorted in ascending order by option
         name.
     """
-    def option_decorators(inner_fn):
+    def option_decorators(fn):
         """ Return the decorator chain wrapped around the given function.
         """
-        decorators = inner_fn
+        decorators = fn
 
-        for option, config_option in sorted(CONFIG_OPTIONS.items(), reverse=True):
+        for option, config_option in sorted(options.items(), reverse=True):
             decorator = click.option("--" + option, "-" + config_option.short, default=config_option.default,
                                      show_default=config_option.show_default, is_flag=config_option.is_flag, help=config_option.help)
             decorators = decorator(decorators)
 
         return decorators
 
-    return option_decorators(fn)
+    return option_decorators
 
 
 # noinspection PyUnusedLocal
@@ -114,10 +98,27 @@ def show_version(ctx, param, value):
     ctx.exit()
 
 
+# Collect all configuration options (that may also appear in the config file) here so that they don't have to be duplicated.
+ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
+CONFIG_OPTIONS = {
+    'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
+                                help="The file name (template tags allowed) for the rendered tweets. "
+                                     "If the file already exists, the rendered tweet will be appended to it. "
+                                     "If omitted, tweets will be rendered to STDOUT."),
+    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
+                                                       "The directory path will be created if it doesn't exist."),
+    'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
+    'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
+    'since-id': ConfigOption('s', None, False, False, "Retrieve tweets that follow this ID in the timeline. "
+                                                      "Required, unless the ID has already been recorded in the config path directory "
+                                                      "after a previous run of Twempest."),
+}
+
+
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--config-path", "-c", default=DEFAULT_CONFIG_PATH, show_default=True,
               help="Twempest configuration directory path. The twempest.conf file must exist in this location.")
-@config_options
+@config_options(CONFIG_OPTIONS)
 @click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
 @click.argument("template", type=click.File('r'))
 def twempest(**kwargs):
