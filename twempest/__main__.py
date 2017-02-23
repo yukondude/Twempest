@@ -48,20 +48,21 @@ def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access
 
 def choose_config_path(cli_dir_path, default_dir_path, fallback_dir_path, file_name):
     """ Choose the most likely configuration path from, in order: the CLI config-path option, the default path, and the fallback path
-        (current directory). To be valid, the config path must contain a twempest.conf file and the directory must be writable.
+        (current directory). To be valid, the config path must contain a twempest.conf file and the directory must be writable. Return
+        both the chosen path and the possible paths as a tuple.
     """
     # Using keys of OrderedDict simulates an OrderedSet type.
-    possible_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None) for p in (cli_dir_path, default_dir_path,
-                                                                                                       fallback_dir_path)])
+    unique_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None) for p in (cli_dir_path, default_dir_path,
+                                                                                                     fallback_dir_path)])
+    possible_paths = list(unique_paths.keys())
 
     for possible_path in possible_paths:
         possible_config_path = os.path.join(possible_path, file_name)
 
         if os.path.isfile(possible_config_path) and os.access(possible_config_path, os.R_OK) and os.access(possible_path, os.W_OK):
-            return possible_path
+            return possible_path, possible_paths
 
-    raise click.ClickException("Could not find readable twempest.conf configuration file in writable directory path(s): '{}'"
-                               .format("', '".join(possible_paths.keys())))
+    return None, possible_paths
 
 
 def choose_option_values(options, cli_args, config):
@@ -146,8 +147,13 @@ def twempest(**kwargs):
         Twempest uses the Jinja template syntax throughout: http://jinja.pocoo.org/docs/2.9/templates/
     """
     config = configparser.RawConfigParser(allow_no_value=True)
-    config_dir_path = choose_config_path(cli_dir_path=kwargs['config_path'], default_dir_path=DEFAULT_CONFIG_DIR_PATH,
-                                         fallback_dir_path=FALLBACK_CONFIG_DIR_PATH, file_name=CONFIG_FILE_NAME)
+    config_dir_path, possible_paths = choose_config_path(cli_dir_path=kwargs['config_path'], default_dir_path=DEFAULT_CONFIG_DIR_PATH,
+                                                         fallback_dir_path=FALLBACK_CONFIG_DIR_PATH, file_name=CONFIG_FILE_NAME)
+
+    if not config_dir_path:
+        raise click.ClickException("Could not find readable twempest.conf configuration file in writable directory path(s): '{}'"
+                                   .format("', '".join(possible_paths)))
+
     config_file_path = os.path.join(config_dir_path, CONFIG_FILE_NAME)
     config.read(config_file_path)
 
