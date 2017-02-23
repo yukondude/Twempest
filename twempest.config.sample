@@ -20,6 +20,8 @@
 
 # Write rendered tweets to the current directory.
 # render-path=.
+# Template expressions are also allowed for this option, so the directory path
+# can be made to change based upon a tweet status variable.
 
 # Exclude @replies from the list of retrieved tweets.
 # replies=false

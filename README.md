@@ -64,10 +64,12 @@ Options:
                           twempest.conf file must exist in this location.
                           [default: ~/.twempest]
   -f, --render-file TEXT  The file name (template tags allowed) for the
-                          rendered tweets. If omitted, tweets will be rendered
-                          to STDOUT.
+                          rendered tweets. If the file already exists, the
+                          rendered tweet will be appended to it. If omitted,
+                          tweets will be rendered to STDOUT.
   -p, --render-path TEXT  The directory path (template tags allowed) to write
-                          the rendered tweets.  [default: .]
+                          the rendered tweet files. The directory path will be
+                          created if it doesn't exist.  [default: .]
   -@, --replies           Include @replies in the list of retrieved tweets.
   -r, --retweets          Include retweets in the list of retrieved tweets.
   -V, --version           Show version and exit.
@@ -100,6 +102,8 @@ Contents of `twempest.config.sample`:
 
 # Write rendered tweets to the current directory.
 # render-path=.
+# Template expressions are also allowed for this option, so the directory path
+# can be made to change based upon a tweet status variable.
 
 # Exclude @replies from the list of retrieved tweets.
 # replies=false
@@ -146,4 +150,4 @@ Replace non-image URLs and hashtag links, using the template tag_format with var
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated February 21, 2017*
+*README.md generated February 22, 2017*

@@ -23,8 +23,10 @@ ConfigOption = collections.namedtuple('ConfigOption', "short default show_defaul
 CONFIG_OPTIONS = {
     'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
                                 help="The file name (template tags allowed) for the rendered tweets. "
+                                     "If the file already exists, the rendered tweet will be appended to it. "
                                      "If omitted, tweets will be rendered to STDOUT."),
-    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweets."),
+    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
+                                                       "The directory path will be created if it doesn't exist."),
     'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
     'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
 }
