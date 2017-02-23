@@ -29,6 +29,12 @@
 # Exclude retweets from the list of retrieved tweets.
 # retweets=false
 
+# Don't specify a most recent Twitter ID.
+# since-id=
+# Since this isn't specified (and normally wouldn't be in a config file), there
+# must already be an ID recorded in the config path directory after a previous
+# run of Twempest.
+
 [twitter]
 # Visit https://apps.twitter.com/ to generate these keys, secrets, tokens, and
 # token secrets. Secret tokens? Token keys? Secret secrets?

@@ -29,6 +29,9 @@ CONFIG_OPTIONS = {
                                                        "The directory path will be created if it doesn't exist."),
     'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
     'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
+    'since-id': ConfigOption('s', None, False, False, "Retrieve tweets that follow this ID in the timeline. "
+                                                      "Required, unless the ID has already been recorded in the config path directory "
+                                                      "after a previous run of Twempest."),
 }
 
 
@@ -138,8 +141,13 @@ def twempest(**kwargs):
     except KeyError as e:
         raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_path))
 
-    include_replies, include_retweets, render_file, render_path = \
-        choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path'), cli_args=kwargs, config=twempest_config)
+    include_replies, include_retweets, render_file, render_path, since_id = \
+        choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path', 'since-id'), cli_args=kwargs,
+                                    config=twempest_config)
+
+    if not since_id:
+        raise click.ClickException("--since-id option is required since the ID was not recorded in '{}' after a previous run of Twempest."
+                                   .format(os.path.dirname(config_path)))
 
     env = jinja2.Environment()
     env.filters.update(ALL_FILTERS)
@@ -149,7 +157,7 @@ def twempest(**kwargs):
     render_path_template = env.from_string(render_path)
 
     try:
-        tweets = list(tweepy.Cursor(api.user_timeline, since_id="804358482535149569", include_rts=include_retweets).items())
+        tweets = list(tweepy.Cursor(api.user_timeline, since_id=since_id, include_rts=include_retweets).items())
     except tweepy.TweepError as e:
         raise click.ClickException(e)
 

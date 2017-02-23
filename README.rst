@@ -90,6 +90,10 @@ Run ``twempest --help`` to view the usage instructions:
                               created if it doesn't exist.  [default: .]
       -@, --replies           Include @replies in the list of retrieved tweets.
       -r, --retweets          Include retweets in the list of retrieved tweets.
+      -s, --since-id TEXT     Retrieve tweets that follow this ID in the timeline.
+                              Required, unless the ID has already been recorded in
+                              the config path directory after a previous run of
+                              Twempest.
       -V, --version           Show version and exit.
       -h, --help              Show this message and exit.
 
@@ -130,6 +134,12 @@ Contents of ``twempest.config.sample``:
 
     # Exclude retweets from the list of retrieved tweets.
     # retweets=false
+
+    # Don't specify a most recent Twitter ID.
+    # since-id=
+    # Since this isn't specified (and normally wouldn't be in a config file), there
+    # must already be an ID recorded in the config path directory after a previous
+    # run of Twempest.
 
     [twitter]
     # Visit https://apps.twitter.com/ to generate these keys, secrets, tokens, and
