@@ -46,8 +46,8 @@ def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access
 
 
 def choose_config_path(cli_dir_path, default_dir_path, fallback_dir_path, file_name):
-    """ Choose the most likely configuration path from, in order: the path specified on the command line, the default path, and the fallback
-        path (current directory). To be valid, the config path must contain a twempest.conf file and the directory must be writable.
+    """ Choose the most likely configuration path from, in order: the CLI config-path option, the default path, and the fallback path
+        (current directory). To be valid, the config path must contain a twempest.conf file and the directory must be writable.
     """
     # Using keys of OrderedDict simulates an OrderedSet type.
     possible_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None) for p in (cli_dir_path, default_dir_path,
@@ -64,8 +64,8 @@ def choose_config_path(cli_dir_path, default_dir_path, fallback_dir_path, file_n
 
 
 def choose_option_values(options, cli_args, config):
-    """ For each of the options given, choose a value from, in order: the CLI switch option, the config file, the CONFIG_OPTIONS default.
-        Return the option values in a tuple.
+    """ For each of the options given, choose a value from, in order: the CLI option, the config file, the CONFIG_OPTIONS default. Return
+        the option values in a tuple.
     """
     option_values = {}
 
@@ -84,9 +84,8 @@ def choose_option_values(options, cli_args, config):
     return option_values
 
 
-def config_options(options):
-    """ Return a decorator with all of the CONFIG_OPTIONS items as a chain of click.option decorators, sorted in ascending order by option
-        name.
+def decorate_config_options(options):
+    """ Return a decorator with all of the CONFIG_OPTIONS items as a chain of click.option decorators, sorted by option name.
     """
     def option_decorators(fn):
         """ Return the decorator chain wrapped around the given function.
@@ -118,7 +117,7 @@ def show_version(ctx, param, value):
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--config-path", "-c", default=DEFAULT_CONFIG_DIR_PATH, show_default=True,
               help="Twempest configuration directory path. The twempest.conf file must exist in this location.")
-@config_options(CONFIG_OPTIONS)
+@decorate_config_options(CONFIG_OPTIONS)
 @click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
 @click.argument("template", type=click.File('r'))
 def twempest(**kwargs):
