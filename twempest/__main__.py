@@ -6,6 +6,7 @@
 
 import collections
 import configparser
+import hashlib
 import os
 
 import click
@@ -84,6 +85,26 @@ def choose_option_values(options, cli_args, config):
     return option_values
 
 
+def choose_since_id(cli_since_id, user_id, config_dir_path):
+    """ Choose the most likely since ID value from, in order: the CLI since-id option, and a record of the ID written to a file in the
+        config directory using the given user_id to distinguish it from others.
+    """
+    since_id = cli_since_id
+
+    if since_id:
+        return since_id
+
+    # Hash the user ID so that it's unique to that user, but doesn't reveal part of the authentication credentials in the file name.
+    last_id_file_name = "twempest-last-{}.id".format(hashlib.sha1(user_id.encode('utf-8')).hexdigest())
+    last_id_file_path = os.path.join(config_dir_path, last_id_file_name)
+
+    if os.path.isfile(last_id_file_path):
+        with open(last_id_file_path, 'r') as f:
+            since_id = f.read()
+
+    return since_id
+
+
 def decorate_config_options(options):
     """ Return a decorator with all of the CONFIG_OPTIONS items as a chain of click.option decorators, sorted by option name.
     """
@@ -143,9 +164,10 @@ def twempest(**kwargs):
         raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_file_path))
 
     option_values = choose_option_values(options=CONFIG_OPTIONS, cli_args=kwargs, config=twempest_config)
+    option_values['since-id'] = choose_since_id(cli_since_id=option_values['since-id'], user_id=twitter_config['consumer_key'],
+                                                config_dir_path=config_dir_path)
 
     if not option_values['since-id']:
-        # TODO: Load since_id from config directory if possible
         raise click.ClickException("--since-id option is required since the ID was not recorded in '{}' after a previous run of Twempest."
                                    .format(config_dir_path))
 
