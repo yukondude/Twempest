@@ -10,10 +10,8 @@ import hashlib
 import os
 
 import click
-import jinja2
-import tweepy
 
-from twempest.filters import ALL_FILTERS
+from twempest.twempest import render
 
 
 # Global config 'constants'.
@@ -36,14 +34,6 @@ CONFIG_OPTIONS = {
                                                       "Required, unless the ID has already been recorded in the config path directory "
                                                       "after a previous run of Twempest."),
 }
-
-
-def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access_token_secret):
-    """ Return the Twitter API object for the given authentication credentials.
-    """
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-    return tweepy.API(auth)
 
 
 def choose_config_path(cli_dir_path, default_dir_path, fallback_dir_path, file_name):
@@ -165,7 +155,6 @@ def twempest(**kwargs):
 
     try:
         auth_keys = {k: twitter_config[k] for k in ('consumer_key', 'consumer_secret', 'access_token', 'access_token_secret')}
-        api = authenticate_twitter_api(**auth_keys)
     except KeyError as e:
         raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_file_path))
 
@@ -177,38 +166,15 @@ def twempest(**kwargs):
         raise click.ClickException("--since-id option is required since the ID was not recorded in '{}' after a previous run of Twempest."
                                    .format(config_dir_path))
 
-    env = jinja2.Environment()
-    env.filters.update(ALL_FILTERS)
-    template = env.from_string(kwargs['template'].read())
-
-    render_file_template = env.from_string(option_values['render-file']) if option_values['render-file'] else None
-    render_path_template = env.from_string(option_values['render-path'])
+    template_file = kwargs['template']
+    template_text = ""
 
     try:
-        tweets = list(tweepy.Cursor(api.user_timeline, since_id=option_values['since-id'],
-                                    include_rts=option_values['retweets']).items())
-    except tweepy.TweepError as e:
-        raise click.ClickException(e)
+        template_text = template_file.read()
+    except IOError as e:
+        click.ClickException("Unable to read template file '{}': {}.".format(template_file.name, e))
 
-    i = 0
-
-    for tweet in reversed(tweets):
-        try:
-            if not option_values['replies'] and tweet.in_reply_to_status_id and tweet.text[0] == '@':
-                continue
-
-            print(template.render(tweet=tweet))
-            print()
-            print(render_path_template.render(tweet=tweet))
-
-            if render_file_template:
-                print(render_file_template.render(tweet=tweet))
-
-            print()
-        except AttributeError as e:
-            print(tweet.id, "NOPE", str(e))
-
-        i += 1
-
-        if i > 10:
-            break
+    try:
+        render(auth_keys=auth_keys, options=option_values, template_text=template_text)
+    except Exception as e:
+        click.ClickException(e)
