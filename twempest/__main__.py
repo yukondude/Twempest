@@ -174,7 +174,4 @@ def twempest(**kwargs):
     except IOError as e:
         click.ClickException("Unable to read template file '{}': {}.".format(template_file.name, e))
 
-    try:
-        render(auth_keys=auth_keys, options=option_values, template_text=template_text)
-    except Exception as e:
-        click.ClickException(e)
+    render(auth_keys=auth_keys, options=option_values, template_text=template_text)

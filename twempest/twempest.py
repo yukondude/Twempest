@@ -27,27 +27,17 @@ def render(auth_keys, options, template_text):
     render_path_template = env.from_string(options['render-path'])
 
     api = authenticate_twitter_api(**auth_keys)
-    tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())
-
-    i = 0
+    tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())[-14:]
 
     for tweet in reversed(tweets):
-        try:
-            if not options['replies'] and tweet.in_reply_to_status_id and tweet.text[0] == '@':
-                continue
+        if not options['replies'] and tweet.in_reply_to_status_id and tweet.text[0] == '@':
+            continue
 
-            print(template.render(tweet=tweet))
-            print()
-            print(render_path_template.render(tweet=tweet))
+        print(template.render(tweet=tweet))
+        print()
+        print(render_path_template.render(tweet=tweet))
 
-            if render_file_template:
-                print(render_file_template.render(tweet=tweet))
+        if render_file_template:
+            print(render_file_template.render(tweet=tweet))
 
-            print()
-        except AttributeError as e:
-            print(tweet.id, "NOPE", str(e))
-
-        i += 1
-
-        if i > 10:
-            break
+        print()
