@@ -15,8 +15,26 @@ import tweepy
 from twempest.filters import ALL_FILTERS
 
 
+# Global config 'constants'.
 CONFIG_FILE_NAME = "twempest.config"
-DEFAULT_CONFIG_PATH = "~/.twempest"
+DEFAULT_CONFIG_DIR_PATH = "~/.twempest"
+FALLBACK_CONFIG_DIR_PATH = "."
+
+# Collect all configuration options (that may also appear in the config file) here so that they don't have to be duplicated.
+ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
+CONFIG_OPTIONS = {
+    'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
+                                help="The file name (template tags allowed) for the rendered tweets. "
+                                     "If the file already exists, the rendered tweet will be appended to it. "
+                                     "If omitted, tweets will be rendered to STDOUT."),
+    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
+                                                       "The directory path will be created if it doesn't exist."),
+    'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
+    'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
+    'since-id': ConfigOption('s', None, False, False, "Retrieve tweets that follow this ID in the timeline. "
+                                                      "Required, unless the ID has already been recorded in the config path directory "
+                                                      "after a previous run of Twempest."),
+}
 
 
 def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access_token_secret):
@@ -27,17 +45,16 @@ def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access
     return tweepy.API(auth)
 
 
-def choose_config_path(cli_config_path):
-    """ Choose the most likely configuration path from, in order: the given path, the default path, and the current working directory. To be
-        valid, the config path must contain a twempest.conf file and the directory must be writable.
+def choose_config_path(cli_dir_path, default_dir_path, fallback_dir_path, file_name):
+    """ Choose the most likely configuration path from, in order: the path specified on the command line, the default path, and the fallback
+        path (current directory). To be valid, the config path must contain a twempest.conf file and the directory must be writable.
     """
     # Using keys of OrderedDict simulates an OrderedSet type.
-    possible_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None) for p in (cli_config_path,
-                                                                                                       DEFAULT_CONFIG_PATH,
-                                                                                                       ".")])
+    possible_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None) for p in (cli_dir_path, default_dir_path,
+                                                                                                       fallback_dir_path)])
 
     for possible_path in possible_paths:
-        possible_config_path = os.path.join(possible_path, CONFIG_FILE_NAME)
+        possible_config_path = os.path.join(possible_path, file_name)
 
         if os.path.isfile(possible_config_path) and os.access(possible_config_path, os.R_OK) and os.access(possible_path, os.W_OK):
             return possible_path
@@ -98,25 +115,8 @@ def show_version(ctx, param, value):
     ctx.exit()
 
 
-# Collect all configuration options (that may also appear in the config file) here so that they don't have to be duplicated.
-ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
-CONFIG_OPTIONS = {
-    'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
-                                help="The file name (template tags allowed) for the rendered tweets. "
-                                     "If the file already exists, the rendered tweet will be appended to it. "
-                                     "If omitted, tweets will be rendered to STDOUT."),
-    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
-                                                       "The directory path will be created if it doesn't exist."),
-    'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
-    'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
-    'since-id': ConfigOption('s', None, False, False, "Retrieve tweets that follow this ID in the timeline. "
-                                                      "Required, unless the ID has already been recorded in the config path directory "
-                                                      "after a previous run of Twempest."),
-}
-
-
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--config-path", "-c", default=DEFAULT_CONFIG_PATH, show_default=True,
+@click.option("--config-path", "-c", default=DEFAULT_CONFIG_DIR_PATH, show_default=True,
               help="Twempest configuration directory path. The twempest.conf file must exist in this location.")
 @config_options(CONFIG_OPTIONS)
 @click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
@@ -126,7 +126,8 @@ def twempest(**kwargs):
         Twempest uses the Jinja template syntax throughout: http://jinja.pocoo.org/docs/2.9/templates/
     """
     config = configparser.RawConfigParser(allow_no_value=True)
-    config_dir_path = choose_config_path(kwargs['config_path'])
+    config_dir_path = choose_config_path(cli_dir_path=kwargs['config_path'], default_dir_path=DEFAULT_CONFIG_DIR_PATH,
+                                         fallback_dir_path=FALLBACK_CONFIG_DIR_PATH, file_name=CONFIG_FILE_NAME)
     config_file_path = os.path.join(config_dir_path, CONFIG_FILE_NAME)
     config.read(config_file_path)
 
