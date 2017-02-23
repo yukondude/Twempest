@@ -10,6 +10,10 @@ import tweepy
 from twempest.filters import ALL_FILTERS
 
 
+class TwempestException(Exception):
+    pass
+
+
 def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access_token_secret):
     """ Return the Twitter API object for the given authentication credentials.
     """
@@ -27,7 +31,12 @@ def render(auth_keys, options, template_text):
     render_path_template = env.from_string(options['render-path'])
 
     api = authenticate_twitter_api(**auth_keys)
-    tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())[-14:]
+
+    try:
+        tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())[-14:]
+    except tweepy.TweepError as e:
+        raise TwempestException("Unable to retrieve tweets. Twitter API responded with '{}'. "
+                                "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))
 
     for tweet in reversed(tweets):
         if not options['replies'] and tweet.in_reply_to_status_id and tweet.text[0] == '@':

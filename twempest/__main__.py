@@ -11,7 +11,7 @@ import os
 
 import click
 
-from twempest.twempest import render
+from twempest.twempest import render, TwempestException
 
 
 # Global config 'constants'.
@@ -167,11 +167,13 @@ def twempest(**kwargs):
                                    .format(config_dir_path))
 
     template_file = kwargs['template']
-    template_text = ""
 
     try:
         template_text = template_file.read()
     except IOError as e:
-        click.ClickException("Unable to read template file '{}': {}.".format(template_file.name, e))
+        raise click.ClickException("Unable to read template file '{}': {}.".format(template_file.name, e))
 
-    render(auth_keys=auth_keys, options=option_values, template_text=template_text)
+    try:
+        render(auth_keys=auth_keys, options=option_values, template_text=template_text)
+    except TwempestException as e:
+        raise click.ClickException(e)
