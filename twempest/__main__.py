@@ -55,25 +55,25 @@ def choose_config_path(cli_dir_path, default_dir_path, fallback_dir_path, file_n
     return None, possible_paths
 
 
-def choose_option_values(options, cli_args, config):
+def choose_option_values(config_options, cli_options, config):
     """ For each of the options given, choose a value from, in order: the CLI option, the config file, the CONFIG_OPTIONS default. Return
         the option values in a tuple.
     """
-    option_values = {}
+    options = {}
 
-    for option, config_option in options.items():
-        option_arg = option.replace('-', '_')
+    for option, config_option in config_options.items():
+        cli_option = option.replace('-', '_')
         config_func = config.getboolean if config_option.is_flag else config.get
 
-        if config_option.is_flag and not cli_args.get(option_arg, False):
+        if config_option.is_flag and not cli_options.get(cli_option, False):
             # Ignore false CLI flags so that they don't mask config file or option defaults.
-            option_values[option] = config_func(option, config_option.default)
-        elif cli_args.get(option_arg) is None:
-            option_values[option] = config_func(option, config_option.default)
+            options[option] = config_func(option, config_option.default)
+        elif cli_options.get(cli_option) is None:
+            options[option] = config_func(option, config_option.default)
         else:
-            option_values[option] = cli_args.get(option_arg, config_func(option, config_option.default))
+            options[option] = cli_options.get(cli_option, config_func(option, config_option.default))
 
-    return option_values
+    return options
 
 
 def choose_since_id(cli_since_id, user_id, config_dir_path):
@@ -158,11 +158,11 @@ def twempest(**kwargs):
     except KeyError as e:
         raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_file_path))
 
-    option_values = choose_option_values(options=CONFIG_OPTIONS, cli_args=kwargs, config=twempest_config)
-    option_values['since-id'] = choose_since_id(cli_since_id=option_values['since-id'], user_id=twitter_config['consumer_key'],
-                                                config_dir_path=config_dir_path)
+    options = choose_option_values(config_options=CONFIG_OPTIONS, cli_options=kwargs, config=twempest_config)
+    options['since-id'] = choose_since_id(cli_since_id=options['since-id'], user_id=twitter_config['consumer_key'],
+                                          config_dir_path=config_dir_path)
 
-    if not option_values['since-id']:
+    if not options['since-id']:
         raise click.ClickException("--since-id option is required since the ID was not recorded in '{}' after a previous run of Twempest."
                                    .format(config_dir_path))
 
@@ -174,6 +174,6 @@ def twempest(**kwargs):
         raise click.ClickException("Unable to read template file '{}': {}.".format(template_file.name, e))
 
     try:
-        render(auth_keys=auth_keys, options=option_values, template_text=template_text)
+        render(auth_keys=auth_keys, options=options, template_text=template_text)
     except TwempestException as e:
         raise click.ClickException(e)
