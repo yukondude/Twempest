@@ -138,7 +138,7 @@ def show_version(ctx, param, value):
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--config-path", "-c", default=DEFAULT_CONFIG_DIR_PATH, show_default=True,
-              help="Twempest configuration directory path. The twempest.conf file must exist in this location.")
+              help="Twempest configuration directory path, which must be writable, and must also contain the twempest.conf file.")
 @decorate_config_options(CONFIG_OPTIONS)
 @click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
 @click.argument("template", type=click.File('r'))

@@ -78,9 +78,9 @@ Run ``twempest --help`` to view the usage instructions:
       syntax throughout: http://jinja.pocoo.org/docs/2.9/templates/
 
     Options:
-      -c, --config-path TEXT  Twempest configuration directory path. The
-                              twempest.conf file must exist in this location.
-                              [default: ~/.twempest]
+      -c, --config-path TEXT  Twempest configuration directory path, which must be
+                              writable, and must also contain the twempest.conf
+                              file.  [default: ~/.twempest]
       -f, --render-file TEXT  The file name (template tags allowed) for the
                               rendered tweets. If the file already exists, the
                               rendered tweet will be appended to it. If omitted,
@@ -196,7 +196,7 @@ with variables ``text`` and ``url`` to format each.
 Transform the given text into a suitable file name that is also scrubbed
 of URLs and hashtags.
 
-*README.md generated February 22, 2017*
+*README.md generated February 23, 2017*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
