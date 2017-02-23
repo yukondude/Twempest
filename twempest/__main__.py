@@ -43,28 +43,6 @@ def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access
     return tweepy.API(auth)
 
 
-def choose_config_option_values(options, cli_args, config):
-    """ For each of the options given, choose a value from, in order: the CLI switch option, the config file, the CONFIG_OPTIONS default.
-        Return the option values in a tuple.
-    """
-    config_values = []
-
-    for option in options:
-        option_arg = option.replace('-', '_')
-        config_option = CONFIG_OPTIONS[option]
-        config_func = config.getboolean if config_option.is_flag else config.get
-
-        if config_option.is_flag and not cli_args.get(option_arg, False):
-            # Ignore false CLI flags so that they don't mask config file or option defaults.
-            config_values.append(config_func(option, config_option.default))
-        elif cli_args.get(option_arg) is None:
-            config_values.append(config_func(option, config_option.default))
-        else:
-            config_values.append(cli_args.get(option_arg, config_func(option, config_option.default)))
-
-    return tuple(config_values)
-
-
 def choose_config_path(cli_config_path):
     """ Choose the most likely configuration path from, in order: the given path, the default path, and the current working directory. To be
         valid, the config path must contain a twempest.conf file and the directory must be writable.
@@ -82,6 +60,27 @@ def choose_config_path(cli_config_path):
 
     raise click.ClickException("Could not find readable twempest.conf configuration file in writable directory path(s): '{}'"
                                .format("', '".join(possible_paths.keys())))
+
+
+def choose_option_values(options, cli_args, config):
+    """ For each of the options given, choose a value from, in order: the CLI switch option, the config file, the CONFIG_OPTIONS default.
+        Return the option values in a tuple.
+    """
+    option_values = {}
+
+    for option, config_option in options.items():
+        option_arg = option.replace('-', '_')
+        config_func = config.getboolean if config_option.is_flag else config.get
+
+        if config_option.is_flag and not cli_args.get(option_arg, False):
+            # Ignore false CLI flags so that they don't mask config file or option defaults.
+            option_values[option] = config_func(option, config_option.default)
+        elif cli_args.get(option_arg) is None:
+            option_values[option] = config_func(option, config_option.default)
+        else:
+            option_values[option] = cli_args.get(option_arg, config_func(option, config_option.default))
+
+    return option_values
 
 
 def config_options(fn):
@@ -142,11 +141,9 @@ def twempest(**kwargs):
     except KeyError as e:
         raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_file_path))
 
-    include_replies, include_retweets, render_file, render_path, since_id = \
-        choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path', 'since-id'), cli_args=kwargs,
-                                    config=twempest_config)
+    option_values = choose_option_values(options=CONFIG_OPTIONS, cli_args=kwargs, config=twempest_config)
 
-    if not since_id:
+    if not option_values['since-id']:
         # TODO: Load since_id from config directory if possible
         raise click.ClickException("--since-id option is required since the ID was not recorded in '{}' after a previous run of Twempest."
                                    .format(config_dir_path))
@@ -155,11 +152,12 @@ def twempest(**kwargs):
     env.filters.update(ALL_FILTERS)
     template = env.from_string(kwargs['template'].read())
 
-    render_file_template = env.from_string(render_file) if render_file else None
-    render_path_template = env.from_string(render_path)
+    render_file_template = env.from_string(option_values['render-file']) if option_values['render-file'] else None
+    render_path_template = env.from_string(option_values['render-path'])
 
     try:
-        tweets = list(tweepy.Cursor(api.user_timeline, since_id=since_id, include_rts=include_retweets).items())
+        tweets = list(tweepy.Cursor(api.user_timeline, since_id=option_values['since-id'],
+                                    include_rts=option_values['retweets']).items())
     except tweepy.TweepError as e:
         raise click.ClickException(e)
 
@@ -167,7 +165,7 @@ def twempest(**kwargs):
 
     for tweet in reversed(tweets):
         try:
-            if not include_replies and tweet.in_reply_to_status_id and tweet.text[0] == '@':
+            if not option_values['replies'] and tweet.in_reply_to_status_id and tweet.text[0] == '@':
                 continue
 
             print(template.render(tweet=tweet))
