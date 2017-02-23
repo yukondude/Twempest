@@ -126,28 +126,30 @@ def twempest(**kwargs):
         Twempest uses the Jinja template syntax throughout: http://jinja.pocoo.org/docs/2.9/templates/
     """
     config = configparser.RawConfigParser(allow_no_value=True)
-    config_path = os.path.join(choose_config_path(kwargs['config_path']), CONFIG_FILE_NAME)
-    config.read(config_path)
+    config_dir_path = choose_config_path(kwargs['config_path'])
+    config_file_path = os.path.join(config_dir_path, CONFIG_FILE_NAME)
+    config.read(config_file_path)
 
     try:
         twitter_config = config['twitter']
         twempest_config = config['twempest']
     except KeyError as e:
-        raise click.ClickException("Could not find required '[{}]' section in '{}'".format(str(e).strip("'"), config_path))
+        raise click.ClickException("Could not find required '[{}]' section in '{}'".format(str(e).strip("'"), config_file_path))
 
     try:
         auth_keys = {k: twitter_config[k] for k in ('consumer_key', 'consumer_secret', 'access_token', 'access_token_secret')}
         api = authenticate_twitter_api(**auth_keys)
     except KeyError as e:
-        raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_path))
+        raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_file_path))
 
     include_replies, include_retweets, render_file, render_path, since_id = \
         choose_config_option_values(options=('replies', 'retweets', 'render-file', 'render-path', 'since-id'), cli_args=kwargs,
                                     config=twempest_config)
 
     if not since_id:
+        # TODO: Load since_id from config directory if possible
         raise click.ClickException("--since-id option is required since the ID was not recorded in '{}' after a previous run of Twempest."
-                                   .format(os.path.dirname(config_path)))
+                                   .format(config_dir_path))
 
     env = jinja2.Environment()
     env.filters.update(ALL_FILTERS)
