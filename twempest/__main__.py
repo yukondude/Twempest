@@ -178,6 +178,6 @@ def twempest(**kwargs):
         raise click.ClickException("Unable to read template file '{}': {}.".format(template_file.name, e))
 
     try:
-        render(auth_keys=auth_keys, options=options, template_text=template_text, writer=click.echo)
+        render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
     except TwempestException as e:
         raise click.ClickException(e)
