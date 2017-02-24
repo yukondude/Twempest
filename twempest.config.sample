@@ -9,6 +9,9 @@
 # --help, and --version, but go ahead and try them if you like. The commented-
 # out defaults are shown below. See the --help output for details.
 
+# Do not append to existing files.
+# append=false
+
 # Render tweets to STDOUT.
 # render-file=
 # Because template expressions are allowed for this option, you can generate

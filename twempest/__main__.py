@@ -22,10 +22,10 @@ FALLBACK_CONFIG_DIR_PATH = "."
 # Collect all configuration options (that may also appear in the config file) here so that they don't have to be duplicated.
 ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
 CONFIG_OPTIONS = {
-    'render-file': ConfigOption(short='f', default=None, show_default=False, is_flag=False,
-                                help="The file name (template tags allowed) for the rendered tweets. "
-                                     "If the file already exists, the rendered tweet will be appended to it. "
-                                     "If omitted, tweets will be rendered to STDOUT."),
+    'append': ConfigOption(short='a', default=False, show_default=False, is_flag=True,
+                           help="Append rendered tweet(s) to existing file(s) rather than skipping past with a warning."),
+    'render-file': ConfigOption('f', None, False, False, "The file name (template tags allowed) for the rendered tweets. "
+                                                         "If omitted, tweets will be rendered to STDOUT."),
     'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
                                                        "The directory path will be created if it doesn't exist."),
     'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),

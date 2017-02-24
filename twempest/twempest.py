@@ -57,6 +57,11 @@ def render(auth_keys, options, template_text, echo):
             os.makedirs(render_dir_path, exist_ok=True)
             render_file_path = os.path.join(render_dir_path, render_file_name_template.render(tweet=tweet))
 
+            if not options['append'] and os.path.isfile(render_file_path):
+                echo("Warning: Skipping existing file '{}'. Use --append to append rendered tweets instead.".format(render_file_path),
+                     err=True)
+                continue
+
             with open(render_file_path, 'a') as f:
                 f.write(template.render(tweet=tweet))
         else:

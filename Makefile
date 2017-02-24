@@ -14,6 +14,7 @@ README.md: README-template.md twempest.config.sample twempest.template.sample tw
 clean:
 	rm -fr dist/
 	rm -fr build/
+	rm -fr output/
 
 docs: README.rst
 	./build-readme.py

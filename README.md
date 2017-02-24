@@ -63,10 +63,11 @@ Options:
   -c, --config-path TEXT  Twempest configuration directory path, which must be
                           writable, and must also contain the twempest.conf
                           file.  [default: ~/.twempest]
+  -a, --append            Append rendered tweet(s) to existing file(s) rather
+                          than skipping past with a warning.
   -f, --render-file TEXT  The file name (template tags allowed) for the
-                          rendered tweets. If the file already exists, the
-                          rendered tweet will be appended to it. If omitted,
-                          tweets will be rendered to STDOUT.
+                          rendered tweets. If omitted, tweets will be rendered
+                          to STDOUT.
   -p, --render-path TEXT  The directory path (template tags allowed) to write
                           the rendered tweet files. The directory path will be
                           created if it doesn't exist.  [default: .]
@@ -94,6 +95,9 @@ Contents of `twempest.config.sample`:
 # leading double-dash). The obvious exceptions would include --config-path,
 # --help, and --version, but go ahead and try them if you like. The commented-
 # out defaults are shown below. See the --help output for details.
+
+# Do not append to existing files.
+# append=false
 
 # Render tweets to STDOUT.
 # render-file=
@@ -160,4 +164,4 @@ Replace non-image URLs and hashtag links, using the template tag_format with var
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated February 23, 2017*
+*README.md generated February 24, 2017*
