@@ -25,7 +25,7 @@ def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access
     return tweepy.API(auth)
 
 
-def render(auth_keys, options, template_text):
+def render(auth_keys, options, template_text, writer):
     env = jinja2.Environment()
     env.filters.update(ALL_FILTERS)
     template = env.from_string(template_text)
@@ -60,5 +60,5 @@ def render(auth_keys, options, template_text):
             with open(render_file_path, 'a') as f:
                 f.write(template.render(tweet=tweet))
         else:
-            print(template.render(tweet=tweet))
-            print()
+            writer(template.render(tweet=tweet))
+            writer()
