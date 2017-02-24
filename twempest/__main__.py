@@ -65,13 +65,11 @@ def choose_option_values(config_options, cli_options, config):
         cli_option = option.replace('-', '_')
         config_func = config.getboolean if config_option.is_flag else config.get
 
-        if config_option.is_flag and not cli_options.get(cli_option, False):
-            # Ignore false CLI flags so that they don't mask config file or option defaults.
-            options[option] = config_func(option, config_option.default)
-        elif cli_options.get(cli_option) is None:
+        if (config_option.is_flag and not cli_options.get(cli_option, False)) or cli_options.get(cli_option) is None:
+            # Ignore False CLI flags or unset CLI options so that they don't mask config file or option defaults.
             options[option] = config_func(option, config_option.default)
         else:
-            options[option] = cli_options.get(cli_option, config_func(option, config_option.default))
+            options[option] = cli_options.get(cli_option)
 
     return options
 
@@ -105,8 +103,14 @@ def decorate_config_options(options):
         decorators = fn
 
         for option, config_option in sorted(options.items(), reverse=True):
-            decorator = click.option("--" + option, "-" + config_option.short, default=config_option.default,
-                                     show_default=config_option.show_default, is_flag=config_option.is_flag, help=config_option.help)
+            help_text = config_option.help
+
+            if config_option.show_default:
+                help_text += "  [default: {}]".format(config_option.default)
+
+            # Don't specify a default value for the option, as it will be the fallback when choose_option_values() is called. For this
+            # reason, append the default to the help text manually if it is to be shown.
+            decorator = click.option("--" + option, "-" + config_option.short, is_flag=config_option.is_flag, help=help_text)
             decorators = decorator(decorators)
 
         return decorators
