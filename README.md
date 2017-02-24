@@ -136,8 +136,8 @@ A simple template to render a tweet as Markdown text suitable for Jekyll posts (
 ```
 ---
 title: {{ tweet.text|delink|truncate(80,False) }}
-author: {{ tweet.user.screen_name }}
-date: {{ tweet.created_at }}
+author: {{ tweet.user.name }}
+date: '{{ tweet.created_at }}'
 tweet_id: {{ tweet.id }}
 ---
 {{ tweet.text|relink("[{{text}}]({{url}})")|reimage("![{{alt}}]({{url}})") }}
