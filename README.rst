@@ -83,6 +83,14 @@ Run ``twempest --help`` to view the usage instructions:
                               file.  [default: ~/.twempest]
       -a, --append            Append rendered tweet(s) to existing file(s) rather
                               than skipping past with a warning.
+      -i, --image-path TEXT   The directory path (template tags allowed) to write
+                              downloaded image (media type == 'photo') files. The
+                              directory path will be created if it doesn't exist.
+                              Media file names use the --render-file name followed
+                              by a number and the appropriate file extension. If
+                              omitted, media files will not be downloaded.
+      -u, --image-url TEXT    The URL path (template tags allowed) to use for all
+                              image files downloaded via the --image-path option.
       -f, --render-file TEXT  The file name (template tags allowed) for the
                               rendered tweets. If omitted, tweets will be rendered
                               to STDOUT.
@@ -118,6 +126,12 @@ Contents of ``twempest.config.sample``:
 
     # Do not append to existing files.
     # append=false
+
+    # Do not download image files.
+    # image-path=
+
+    # Do not download image files.
+    # image-url=
 
     # Render tweets to STDOUT.
     # render-file=

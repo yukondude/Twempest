@@ -24,6 +24,14 @@ ConfigOption = collections.namedtuple('ConfigOption', "short default show_defaul
 CONFIG_OPTIONS = {
     'append': ConfigOption(short='a', default=False, show_default=False, is_flag=True,
                            help="Append rendered tweet(s) to existing file(s) rather than skipping past with a warning."),
+    'image-path': ConfigOption('i', None, False, False, "The directory path (template tags allowed) to write downloaded image "
+                                                        "(media type == 'photo') files. "
+                                                        "The directory path will be created if it doesn't exist. "
+                                                        "Media file names use the --render-file name followed by a number and the "
+                                                        "appropriate file extension. "
+                                                        "If omitted, media files will not be downloaded."),
+    'image-url': ConfigOption('u', None, False, False, "The URL path (template tags allowed) to use for all image files downloaded via the "
+                                                       "--image-path option."),
     'render-file': ConfigOption('f', None, False, False, "The file name (template tags allowed) for the rendered tweets. "
                                                          "If omitted, tweets will be rendered to STDOUT."),
     'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
@@ -163,6 +171,13 @@ def twempest(**kwargs):
         raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_file_path))
 
     options = choose_option_values(config_options=CONFIG_OPTIONS, cli_options=kwargs, config=twempest_config)
+
+    if options['image-path'] and not options['render-file']:
+        raise click.ClickException("Cannot download images unless the --render-file option is also specified.")
+
+    if options['image-url'] and not options['image-path']:
+        raise click.ClickException("The --image-url option may only be specified if the --image-path option is as well.")
+
     options['since-id'] = choose_since_id(cli_since_id=options['since-id'], user_id=twitter_config['consumer_key'],
                                           config_dir_path=config_dir_path)
 
@@ -174,8 +189,8 @@ def twempest(**kwargs):
 
     try:
         template_text = template_file.read()
-    except IOError as e:
-        raise click.ClickException("Unable to read template file '{}': {}.".format(template_file.name, e))
+    except OSError as e:
+        raise click.ClickException("Unable to read template file: {}.".format(template_file.name, e))
 
     try:
         render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)

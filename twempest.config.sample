@@ -12,6 +12,12 @@
 # Do not append to existing files.
 # append=false
 
+# Do not download image files.
+# image-path=
+
+# Do not download image files.
+# image-url=
+
 # Render tweets to STDOUT.
 # render-file=
 # Because template expressions are allowed for this option, you can generate

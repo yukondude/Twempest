@@ -30,6 +30,8 @@ def render(auth_keys, options, template_text, echo):
     env.filters.update(ALL_FILTERS)
     template = env.from_string(template_text)
 
+    image_dir_path_template = env.from_string(options['image-path']) if options['image-path'] else None
+    image_url_path_template = env.from_string(options['image-url']) if options['image-url'] else None
     render_file_name_template = env.from_string(options['render-file']) if options['render-file'] else None
     render_dir_path_template = env.from_string(options['render-path'])
 
@@ -55,7 +57,27 @@ def render(auth_keys, options, template_text, echo):
         if render_file_name_template:
             render_dir_path = os.path.abspath(render_dir_path_template.render(tweet=tweet))
             os.makedirs(render_dir_path, exist_ok=True)
-            render_file_path = os.path.join(render_dir_path, render_file_name_template.render(tweet=tweet))
+            render_file_name = render_file_name_template.render(tweet=tweet)
+            render_file_path = os.path.join(render_dir_path, render_file_name)
+
+            if options['image-path']:
+                image_dir_path = os.path.abspath(image_dir_path_template.render(tweet=tweet))
+
+                for i, media in enumerate(m for m in tweet.entities.get('media', []) if m['type'] == 'photo'):
+                    image_download_url = media['media_url_https'] if media['media_url_https'] else media['media_url']
+                    image_file_name = "{}-{}{}".format(os.path.splitext(render_file_name)[0], i,
+                                                       os.path.splitext(os.path.basename(image_download_url))[1])
+                    image_file_path = os.path.join(image_dir_path, image_file_name)
+                    image_url_path = image_url_path_template.render(tweet=tweet) + image_file_name
+
+                    # Inject the downloaded image URL into tweet status object, with a backup in case that's ever of need.
+                    media['original_media_url_https'] = media['media_url_https']
+                    media['media_url_https'] = image_url_path if image_url_path.lower().startswith("https") else None
+                    media['original_media_url'] = media['media_url']
+                    media['media_url'] = image_url_path if not image_url_path.lower().startswith("https") else None
+
+                    # TODO: download the image to image_file_path
+                    # TODO: warn if skipping existing image files.
 
             if not options['append'] and os.path.isfile(render_file_path):
                 echo("Warning: Skipping existing file '{}'. Use --append to append rendered tweets instead.".format(render_file_path),
