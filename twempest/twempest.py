@@ -13,7 +13,7 @@ import tzlocal
 from twempest.filters import ALL_FILTERS
 
 
-class TwempestException(Exception):
+class TwempestError(Exception):
     pass
 
 
@@ -42,8 +42,8 @@ def render(auth_keys, options, template_text, echo):
         # TODO: Remove [-14:] slice at the end...
         tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())[-14:]
     except tweepy.TweepError as e:
-        raise TwempestException("Unable to retrieve tweets. Twitter API responded with '{}'. "
-                                "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))
+        raise TwempestError("Unable to retrieve tweets. Twitter API responded with '{}'. "
+                            "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))
 
     for tweet in reversed(tweets):
         # Replace UTC created time with local time.
@@ -61,9 +61,11 @@ def render(auth_keys, options, template_text, echo):
                 echo("Warning: Skipping existing file '{}'. Use --append to append rendered tweets instead.".format(render_file_path),
                      err=True)
                 continue
-
-            with open(render_file_path, 'a') as f:
-                f.write(template.render(tweet=tweet))
+            try:
+                with open(render_file_path, 'a') as f:
+                    f.write(template.render(tweet=tweet))
+            except OSError as e:
+                raise TwempestError("Unable to write rendered tweet: {}".format(e))
         else:
             echo(template.render(tweet=tweet))
             echo()

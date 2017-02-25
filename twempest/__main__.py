@@ -11,7 +11,7 @@ import os
 
 import click
 
-from twempest.twempest import render, TwempestException
+from twempest.twempest import render, TwempestError
 
 
 # Global config 'constants'.
@@ -179,5 +179,5 @@ def twempest(**kwargs):
 
     try:
         render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
-    except TwempestException as e:
+    except TwempestError as e:
         raise click.ClickException(e)
