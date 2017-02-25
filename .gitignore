@@ -13,6 +13,7 @@ dist/
 .coverage.*
 .cache
 coverage.xml
+output/
 
 # PyCharm dev-specific settings
 .idea/workspace.xml
