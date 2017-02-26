@@ -11,7 +11,7 @@ import tweepy
 import tzlocal
 import urllib.request as request
 
-from twempest.filters import ALL_FILTERS
+from .filters import ALL_FILTERS
 
 
 class TwempestError(Exception):

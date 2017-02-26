@@ -11,7 +11,7 @@ import os
 
 import click
 
-from twempest.twempest import render, TwempestError
+from .twempest import render, TwempestError
 
 
 # Global config 'constants'.
