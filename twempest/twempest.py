@@ -9,6 +9,7 @@ import os
 import pytz
 import tweepy
 import tzlocal
+import urllib.request as request
 
 from twempest.filters import ALL_FILTERS
 
@@ -62,6 +63,7 @@ def render(auth_keys, options, template_text, echo):
 
             if options['image-path']:
                 image_dir_path = os.path.abspath(image_dir_path_template.render(tweet=tweet))
+                os.makedirs(image_dir_path, exist_ok=True)
 
                 for i, media in enumerate(m for m in tweet.entities.get('media', []) if m['type'] == 'photo'):
                     image_download_url = media['media_url_https'] if media['media_url_https'] else media['media_url']
@@ -70,19 +72,29 @@ def render(auth_keys, options, template_text, echo):
                     image_file_path = os.path.join(image_dir_path, image_file_name)
                     image_url_path = image_url_path_template.render(tweet=tweet) + image_file_name
 
-                    # Inject the downloaded image URL into tweet status object, with a backup in case that's ever of need.
+                    # Inject the downloaded image URL into the tweet status object and backup the original media URL(s) just in case.
+                    is_https = image_url_path.lower().startswith("https")
+                    media['media_url_https'] = image_url_path if is_https else None
                     media['original_media_url_https'] = media['media_url_https']
-                    media['media_url_https'] = image_url_path if image_url_path.lower().startswith("https") else None
+                    media['media_url'] = image_url_path if not is_https else None
                     media['original_media_url'] = media['media_url']
-                    media['media_url'] = image_url_path if not image_url_path.lower().startswith("https") else None
 
-                    # TODO: download the image to image_file_path
-                    # TODO: warn if skipping existing image files.
+                    if os.path.exists(image_file_path):
+                        echo("Warning: Skipping existing image file '{}'.".format(image_file_path))
+                        continue
 
-            if not options['append'] and os.path.isfile(render_file_path):
+                    try:
+                        request.urlretrieve(image_download_url, image_file_path)
+                    except request.URLError as e:
+                        raise TwempestError("Unable to download image file: {}".format(e))
+                    except OSError as e:
+                        raise TwempestError("Unable to write downloaded image file: {}".format(e))
+
+            if not options['append'] and os.path.exists(render_file_path):
                 echo("Warning: Skipping existing file '{}'. Use --append to append rendered tweets instead.".format(render_file_path),
                      err=True)
                 continue
+
             try:
                 with open(render_file_path, 'a') as f:
                     f.write(template.render(tweet=tweet))
