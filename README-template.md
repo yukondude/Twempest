@@ -15,7 +15,7 @@ That's it, that's all.
 
 ## Licence
 
-Copyright 2017 Dave Rogers <info@yukondude.com>.
+Copyright 2017 Dave Rogers.
 Licensed under the [GNU General Public License, version 3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
@@ -37,7 +37,7 @@ On macOS, Homebrew will take care of installing any dependencies, including Pyth
 
 ### PyPI (POSIX)
 
-On *NIX, you will first need to install Python 3.3 (or higher) using your preferred method.
+On *NIX, you will first need to install Python 3.6 (or higher) using your preferred method.
 
     pip3 install twempest
 
@@ -69,6 +69,19 @@ A simple template to render a tweet as Markdown text suitable for Jekyll posts (
 
 ```
 @@TEMPLATETEXT@@
+```
+
+The rendered output of this template might look something like the following:
+
+```
+---
+title: Ice fog "boiling" up from the Yukon River.
+author: Dave Rogers
+date: '2016-12-06 12:12:36-08:00'
+tweet_id: 806229878861201408
+---
+Ice fog "boiling" up from the [#Yukon](https://twitter.com/hashtag/yukon) River.
+![2016-12-06-ice-fog-boiling-up-from-the-yukon-river-0](/media/2016-12-06-ice-fog-boiling-up-from-the-yukon-river-0.jpg)
 ```
 
 ## `tweet` Context Variable
