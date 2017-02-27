@@ -206,5 +206,5 @@ def twempest(**kwargs):
         raise click.ClickException(e)
 
     if last_tweet_id:
-        with open(last_tweet_id_file_name(user_id=twitter_config['consumer_key']), 'w') as f:
+        with open(os.path.join(config_dir_path, last_tweet_id_file_name(user_id=twitter_config['consumer_key'])), 'w') as f:
             f.write(str(last_tweet_id))
