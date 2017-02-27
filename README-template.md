@@ -75,8 +75,8 @@ The rendered output of this template might look something like the following:
 
 ```
 ---
-title: Ice fog "boiling" up from the Yukon River.
-author: Dave Rogers
+title: 'Ice fog &#34;boiling&#34; up from the Yukon River.'
+author: 'Dave Rogers'
 date: '2016-12-06 12:12:36-08:00'
 tweet_id: 806229878861201408
 ---

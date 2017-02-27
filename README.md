@@ -154,8 +154,8 @@ A simple template to render a tweet as Markdown text suitable for Jekyll posts (
 
 ```
 ---
-title: {{ tweet.text|delink|truncate(80,False) }}
-author: {{ tweet.user.name }}
+title: '{{ tweet.text|delink|truncate(80,False)|escape }}'
+author: '{{ tweet.user.name|escape }}'
 date: '{{ tweet.created_at }}'
 tweet_id: {{ tweet.id }}
 ---
@@ -166,8 +166,8 @@ The rendered output of this template might look something like the following:
 
 ```
 ---
-title: Ice fog "boiling" up from the Yukon River.
-author: Dave Rogers
+title: 'Ice fog &#34;boiling&#34; up from the Yukon River.'
+author: 'Dave Rogers'
 date: '2016-12-06 12:12:36-08:00'
 tweet_id: 806229878861201408
 ---
@@ -205,4 +205,4 @@ Replace non-image URLs and hashtag links, using the template tag_format with var
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated February 26, 2017*
+*README.md generated February 27, 2017*
