@@ -75,7 +75,7 @@ def render(auth_keys, options, template_text, echo):
                     image_file_name = "{}-{}{}".format(os.path.splitext(render_file_name)[0], i,
                                                        os.path.splitext(os.path.basename(image_download_url))[1])
                     image_file_path = os.path.join(image_dir_path, image_file_name)
-                    image_url_path = image_url_path_template.render(tweet=tweet) + image_file_name
+                    image_url_path = image_url_path_template.render(tweet=tweet).rstrip('/') + '/' + image_file_name
 
                     # Inject the downloaded image URL into the tweet status object and backup the original media URL(s) just in case.
                     is_https = image_url_path.lower().startswith("https")
