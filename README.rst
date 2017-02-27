@@ -12,7 +12,8 @@ posts on my Jekyll-built blog. That's it, that's all.
 Licence
 -------
 
-Licensed under the `GNU General Public License, version
+Copyright 2017 Dave Rogers info@yukondude.com. Licensed under the `GNU
+General Public License, version
 3 <https://www.gnu.org/licenses/gpl-3.0.en.html>`__. Refer to the
 attached LICENSE file or see http://www.gnu.org/licenses/ for details.
 
@@ -183,8 +184,33 @@ posts (``twempest.template.sample``):
     ---
     {{ tweet.text|relink("[{{text}}]({{url}})")|reimage("![{{alt}}]({{url}})") }}
 
+``tweet`` Context Variable
+--------------------------
+
+See the `Twitter API documentation for
+tweets <https://dev.twitter.com/overview/api/tweets>`__ for a list of
+all of the keys that can be found under the ``tweet`` context variable
+(a dictionary).
+
+A couple of other keys are also available:
+
+``tweet.media[].original_media_url``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The original value of the ``media_url`` key within the list of ``media``
+items before any downloaded image URL rewriting took place.
+
+``tweet.media[].original_media_url_https``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The original value of the ``media_url_https`` key within the list of
+``media`` items before any downloaded image URL rewriting took place.
+
 Template Filters
 ----------------
+
+These are in addition to the `built-in Jinja2
+filters <http://jinja.pocoo.org/docs/2.9/templates/#list-of-builtin-filters>`__.
 
 ``delink``
 ~~~~~~~~~~
