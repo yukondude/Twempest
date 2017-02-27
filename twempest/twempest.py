@@ -27,6 +27,10 @@ def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access
 
 
 def render(auth_keys, options, template_text, echo):
+    """ Using the given authorization credentials and rendering options, retrieve the tweets from the authorized user's timeline and render
+        them using the given template text. Also download images if requested. Write any warning messages to the console using the passed
+        echo() function, and raise all errors as TwempestError.
+    """
     env = jinja2.Environment()
     env.filters.update(ALL_FILTERS)
     template = env.from_string(template_text)
@@ -41,9 +45,10 @@ def render(auth_keys, options, template_text, echo):
     gmt_tz = pytz.timezone('UTC')
     local_tz = tzlocal.get_localzone()
 
+    last_tweet_id = None
+
     try:
-        # TODO: Remove [-14:] slice at the end...
-        tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())[-14:]
+        tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())
     except tweepy.TweepError as e:
         raise TwempestError("Unable to retrieve tweets. Twitter API responded with '{}'. "
                             "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))
@@ -80,7 +85,7 @@ def render(auth_keys, options, template_text, echo):
                     media['original_media_url'] = media['media_url']
 
                     if os.path.exists(image_file_path):
-                        echo("Warning: Skipping existing image file '{}'.".format(image_file_path))
+                        echo("Warning: Skipping existing image file '{}'.".format(image_file_path), err=True)
                         continue
 
                     try:
@@ -103,3 +108,10 @@ def render(auth_keys, options, template_text, echo):
         else:
             echo(template.render(tweet=tweet))
             echo()
+
+        last_tweet_id = tweet.id
+
+    if not last_tweet_id:
+        echo("Warning: No tweets were retrieved.", err=True)
+
+    return last_tweet_id

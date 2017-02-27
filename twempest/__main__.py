@@ -92,7 +92,7 @@ def choose_since_id(cli_since_id, user_id, config_dir_path):
         return since_id
 
     # Hash the user ID so that it's unique to that user, but doesn't reveal part of the authentication credentials in the file name.
-    last_id_file_name = "twempest-last-{}.id".format(hashlib.sha1(user_id.encode('utf-8')).hexdigest())
+    last_id_file_name = last_tweet_id_file_name(user_id)
     last_id_file_path = os.path.join(config_dir_path, last_id_file_name)
 
     if os.path.isfile(last_id_file_path):
@@ -124,6 +124,12 @@ def decorate_config_options(options):
         return decorators
 
     return option_decorators
+
+
+def last_tweet_id_file_name(user_id):
+    """ Return the last tweet ID file name corresponding to the given user.
+    """
+    return "twempest-last-{}.id".format(hashlib.sha1(user_id.encode('utf-8')).hexdigest())
 
 
 # noinspection PyUnusedLocal
@@ -182,7 +188,9 @@ def twempest(**kwargs):
                                           config_dir_path=config_dir_path)
 
     if not options['since-id']:
-        raise click.ClickException("--since-id option is required since the ID was not recorded in '{}' after a previous run of Twempest."
+        raise click.ClickException("The --since-id option is required since the ID was not recorded in '{}' after a previous run of "
+                                   "Twempest. To find the ID, open a specific tweet on the Twitter website and view the page's address: "
+                                   "the long number following 'status/' is that tweet's ID."
                                    .format(config_dir_path))
 
     template_file = kwargs['template']
@@ -193,6 +201,10 @@ def twempest(**kwargs):
         raise click.ClickException("Unable to read template file: {}.".format(template_file.name, e))
 
     try:
-        render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
+        last_tweet_id = render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
     except TwempestError as e:
         raise click.ClickException(e)
+
+    if last_tweet_id:
+        with open(last_tweet_id_file_name(user_id=twitter_config['consumer_key']), 'w') as f:
+            f.write(str(last_tweet_id))
