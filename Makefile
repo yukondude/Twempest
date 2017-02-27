@@ -26,7 +26,7 @@ build: clean docs
 	./setup.py bdist_wheel >/dev/null
 
 bump:
-	./setup.py test
+#	./setup.py test
 	./bump-version.py
 	@$(MAKE) build
 	ls dist/*.whl | xargs -I{} twine register {}
