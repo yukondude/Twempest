@@ -86,6 +86,14 @@ def test_help_option_switch():
     version_option_switch("--help")
 
 
+def test_last_tweet_id_file_name():
+    fn1 = last_tweet_id_file_name("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    fn2 = last_tweet_id_file_name("aaaaaaaaaaaaaaaaaaaaaaaaaaaaab")
+    fn3 = last_tweet_id_file_name("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    assert fn1 == fn3
+    assert fn1 != fn2
+
+
 VERSION_OPTION_REGEX = re.compile(r"Twempest version (\d+\.\d+\.\d+)Copyright.+See LICENSE\.$")
 
 
