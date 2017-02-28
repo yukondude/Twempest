@@ -6,6 +6,7 @@
 
 import os
 import re
+import stat
 
 from click.testing import CliRunner
 
@@ -23,7 +24,6 @@ def test_choose_config_path():
         root = os.getcwd()
         os.chdir("fff/ggg")
         possible_paths = [os.path.abspath(os.path.join(root, p)) for p in ["kkk", "iii/jjj", "fff/ggg"]]
-        print(possible_paths)
 
         assert choose_config_path(possible_paths[0], possible_paths[1], possible_paths[2], CONFIG_FILE_NAME)[0] is None
 
@@ -33,6 +33,11 @@ def test_choose_config_path():
 
             assert (possible_paths[i], possible_paths) == choose_config_path(possible_paths[0], possible_paths[1], possible_paths[2],
                                                                              CONFIG_FILE_NAME)
+
+        for i in [2, 1, 0]:
+            os.chmod(possible_paths[i], 0o555)
+
+        assert (None, possible_paths) == choose_config_path(possible_paths[0], possible_paths[1], possible_paths[2], CONFIG_FILE_NAME)
 
 
 HELP_OPTION_REGEX = re.compile(r"^Usage: twempest.+Show this message and exit\.$")
