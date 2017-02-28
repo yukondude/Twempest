@@ -10,11 +10,11 @@ import re
 from click.testing import CliRunner
 
 from twempest import __version__
-from twempest.__main__ import choose_config_path, choose_option_values, CONFIG_FILE_NAME, CONFIG_OPTIONS, twempest
+from twempest.__main__ import choose_config_path, choose_option_values, choose_since_id, last_tweet_id_file_name,\
+    CONFIG_FILE_NAME, CONFIG_OPTIONS, twempest
 
 
 def test_choose_config_path():
-    # choose_config_path(cli_dir_path, default_dir_path, fallback_dir_path, file_name)
     with CliRunner().isolated_filesystem():
         os.makedirs("fff/ggg/hhh")
         os.makedirs("iii/jjj")
@@ -51,6 +51,23 @@ def test_choose_option_values():
     assert options['render-path'] == CONFIG_OPTIONS['render-path'].default
     assert options['replies'] is True
     assert options['retweets'] is True
+
+
+def test_choose_since_id():
+    with CliRunner().isolated_filesystem():
+        user_id = "xxx"
+
+        since_id = choose_since_id("1234", user_id, ".")
+        assert since_id == "1234"
+
+        with open(last_tweet_id_file_name(user_id), 'w') as f:
+            f.write("6789")
+
+        since_id = choose_since_id(None, user_id, ".")
+        assert since_id == "6789"
+
+        since_id = choose_since_id("1234", user_id, ".")
+        assert since_id == "1234"
 
 
 HELP_OPTION_REGEX = re.compile(r"^Usage: twempest.+Show this message and exit\.$")
