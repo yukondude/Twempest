@@ -94,6 +94,115 @@ def test_last_tweet_id_file_name():
     assert fn1 != fn2
 
 
+def test_twempest_fail_1_no_argument():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+
+def test_twempest_fail_2_missing_section():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twitter]")
+
+        result = runner.invoke(twempest, ["-c", ".", "template"])
+        assert "Could not find required '[twempest]' section" in result.output
+        assert result.exit_code != 0
+
+
+def test_twempest_fail_3_missing_auth():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twempest]\n[twitter]")
+
+        result = runner.invoke(twempest, ["-c", ".", "template"])
+        assert "Could not find required Twitter authentication credential 'consumer_key' in" in result.output
+        assert result.exit_code != 0
+
+
+def test_twempest_fail_4_image_path_no_render_file():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twempest]\n[twitter]\nconsumer_key=a\nconsumer_secret=b\naccess_token=c\naccess_token_secret=d")
+
+        result = runner.invoke(twempest, ["-c", ".", "-i", ".", "template"])
+        assert "Cannot download images unless the --render-file option is also specified." in result.output
+        assert result.exit_code != 0
+
+
+def test_twempest_fail_5_image_url_no_image_path():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twempest]\n[twitter]\nconsumer_key=a\nconsumer_secret=b\naccess_token=c\naccess_token_secret=d")
+
+        result = runner.invoke(twempest, ["-c", ".", "-u", "foo/", "template"])
+        assert "The --image-url option may only be specified if the --image-path option is as well." in result.output
+        assert result.exit_code != 0
+
+
+def test_twempest_fail_6_no_since_id():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twempest]\n[twitter]\nconsumer_key=a\nconsumer_secret=b\naccess_token=c\naccess_token_secret=d")
+
+        result = runner.invoke(twempest, ["-c", ".", "template"])
+        assert "The --since-id option is required" in result.output
+        assert result.exit_code != 0
+
+
+def test_twempest_fail_7_response_401():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twempest]\n[twitter]\nconsumer_key=a\nconsumer_secret=b\naccess_token=c\naccess_token_secret=d")
+
+        result = runner.invoke(twempest, ["-c", ".", "-s", "12345", "template"])
+        assert "Response [401]" in result.output
+        assert result.exit_code != 0
+
+
 VERSION_OPTION_REGEX = re.compile(r"Twempest version (\d+\.\d+\.\d+)Copyright.+See LICENSE\.$")
 
 
