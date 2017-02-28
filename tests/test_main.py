@@ -6,12 +6,11 @@
 
 import os
 import re
-import stat
 
 from click.testing import CliRunner
 
 from twempest import __version__
-from twempest.__main__ import choose_config_path, CONFIG_FILE_NAME, twempest
+from twempest.__main__ import choose_config_path, choose_option_values, CONFIG_FILE_NAME, CONFIG_OPTIONS, twempest
 
 
 def test_choose_config_path():
@@ -38,6 +37,20 @@ def test_choose_config_path():
             os.chmod(possible_paths[i], 0o555)
 
         assert (None, possible_paths) == choose_config_path(possible_paths[0], possible_paths[1], possible_paths[2], CONFIG_FILE_NAME)
+
+
+def test_choose_option_values():
+    class MockConfig(dict):
+        def getboolean(self, k, d):
+            return bool(self.get(k, d))
+
+    cli_options = {'replies': True}
+    config = MockConfig()
+    config['retweets'] = True
+    options = choose_option_values(CONFIG_OPTIONS, cli_options, config)
+    assert options['render-path'] == CONFIG_OPTIONS['render-path'].default
+    assert options['replies'] is True
+    assert options['retweets'] is True
 
 
 HELP_OPTION_REGEX = re.compile(r"^Usage: twempest.+Show this message and exit\.$")
