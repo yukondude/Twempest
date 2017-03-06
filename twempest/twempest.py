@@ -104,7 +104,7 @@ def render(auth_keys, options, template_text, echo):
 
             rendered_tweet = template.render(tweet=tweet)
 
-            if options['skip'].search(rendered_tweet) is not None:
+            if options['skip'] and options['skip'].search(rendered_tweet) is not None:
                 echo("Warning: Skipping tweet ID {} ('{}{}') because its rendered form matches the --skip pattern."
                      .format(tweet.id, tweet.text[:30], "..." if len(tweet.text) > 30 else ""), err=True)
 

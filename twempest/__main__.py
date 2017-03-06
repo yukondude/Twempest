@@ -207,7 +207,7 @@ def twempest(**kwargs):
     try:
         template_text = template_file.read()
     except OSError as e:
-        raise click.ClickException("Unable to read template file: {}.".format(template_file.name, e))
+        raise click.ClickException("Unable to read template file: {}".format(e))
 
     try:
         last_tweet_id = render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
@@ -216,4 +216,7 @@ def twempest(**kwargs):
 
     if last_tweet_id:
         with open(os.path.join(config_dir_path, last_tweet_id_file_name(user_id=twitter_config['consumer_key'])), 'w') as f:
-            f.write(str(last_tweet_id))
+            try:
+                f.write(str(last_tweet_id))
+            except OSError as e:
+                raise click.ClickException("Unable to write last tweet ID file: {}".format(e))
