@@ -12,6 +12,9 @@
 # Do not append to existing files.
 # append=false
 
+# Retrieve tweets normally.
+# dry-run=false
+
 # Do not download image files.
 # image-path=
 

@@ -25,6 +25,7 @@ ConfigOption = collections.namedtuple('ConfigOption', "short default show_defaul
 CONFIG_OPTIONS = {
     'append': ConfigOption(short='a', default=False, show_default=False, is_flag=True,
                            help="Append rendered tweet(s) to existing file(s) rather than skipping past with a warning."),
+    'dry-run': ConfigOption('D', False, False, True, "Display all configuration options and template contents without retrieving tweets."),
     'image-path': ConfigOption('i', None, False, False, "The directory path (template tags allowed) to write downloaded image "
                                                         "(media type == 'photo') files. "
                                                         "The directory path will be created if it doesn't exist. "
@@ -179,6 +180,7 @@ def twempest(**kwargs):
         raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_file_path))
 
     options = choose_option_values(config_options=CONFIG_OPTIONS, cli_options=kwargs, config=twempest_config)
+    options['config-path'] = config_file_path
 
     if options['image-path'] and not options['render-file']:
         raise click.ClickException("Cannot download images unless the --render-file option is also specified.")
@@ -209,14 +211,22 @@ def twempest(**kwargs):
     except OSError as e:
         raise click.ClickException("Unable to read template file: {}".format(e))
 
-    try:
-        last_tweet_id = render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
-    except TwempestError as e:
-        raise click.ClickException(e)
+    if options['dry-run']:
+        for option in sorted(options.keys()):
+            click.echo("{} = {}".format(option, options[option]))
 
-    if last_tweet_id:
-        with open(os.path.join(config_dir_path, last_tweet_id_file_name(user_id=twitter_config['consumer_key'])), 'w') as f:
-            try:
-                f.write(str(last_tweet_id))
-            except OSError as e:
-                raise click.ClickException("Unable to write last tweet ID file: {}".format(e))
+        click.echo()
+        click.echo("template =")
+        click.echo(template_text)
+    else:
+        try:
+            last_tweet_id = render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
+        except TwempestError as e:
+            raise click.ClickException(e)
+
+        if last_tweet_id:
+            with open(os.path.join(config_dir_path, last_tweet_id_file_name(user_id=twitter_config['consumer_key'])), 'w') as f:
+                try:
+                    f.write(str(last_tweet_id))
+                except OSError as e:
+                    raise click.ClickException("Unable to write last tweet ID file: {}".format(e))

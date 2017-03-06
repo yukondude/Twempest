@@ -94,6 +94,23 @@ def test_last_tweet_id_file_name():
     assert fn1 != fn2
 
 
+def test_twempest_dry_run():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twempest]\n[twitter]\nconsumer_key=a\nconsumer_secret=b\naccess_token=c\naccess_token_secret=d")
+
+        result = runner.invoke(twempest, ["-c", ".", "-s", "12345", "-D", "template"])
+        assert "since-id = 12345" in result.output
+        assert result.exit_code == 0
+
+
 def test_twempest_fail_1_no_argument():
     with CliRunner().isolated_filesystem():
         runner = CliRunner()
@@ -203,7 +220,7 @@ def test_twempest_fail_7_bad_skip_re():
         assert result.exit_code != 0
 
 
-def test_twempest_fail_8_response_401():
+def test_twempest_fail_9_response_401():
     with CliRunner().isolated_filesystem():
         runner = CliRunner()
         result = runner.invoke(twempest, [])

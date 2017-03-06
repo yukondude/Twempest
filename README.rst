@@ -20,7 +20,7 @@ for details.
 Change Log
 ----------
 
-The current version is 0.1.5. Twempest is
+The current version is 0.1.6. Twempest is
 `semver <http://semver.org/>`__-ish in its versioning scheme.
 
 Twempest is currently an alpha release, so expect many many breaking
@@ -84,6 +84,8 @@ Run ``twempest --help`` to view the usage instructions:
                               file.  [default: ~/.twempest]
       -a, --append            Append rendered tweet(s) to existing file(s) rather
                               than skipping past with a warning.
+      -D, --dry-run           Display all configuration options and template
+                              contents without retrieving tweets.
       -i, --image-path TEXT   The directory path (template tags allowed) to write
                               downloaded image (media type == 'photo') files. The
                               directory path will be created if it doesn't exist.
@@ -129,6 +131,9 @@ Contents of ``twempest.config.sample``:
 
     # Do not append to existing files.
     # append=false
+
+    # Retrieve tweets normally.
+    # dry-run=false
 
     # Do not download image files.
     # image-path=
@@ -259,7 +264,7 @@ with variables ``text`` and ``url`` to format each.
 Transform the given text into a suitable file name that is also scrubbed
 of URLs and hashtags.
 
-*README.md generated March 5, 2017*
+*README.md generated March 6, 2017*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
