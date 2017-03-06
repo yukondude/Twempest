@@ -8,6 +8,7 @@ import collections
 import configparser
 import hashlib
 import os
+import re
 
 import click
 
@@ -41,6 +42,7 @@ CONFIG_OPTIONS = {
     'since-id': ConfigOption('s', None, False, False, "Retrieve tweets that follow this ID in the timeline. "
                                                       "Required, unless the ID has already been recorded in the config path directory "
                                                       "after a previous run of Twempest."),
+    'skip': ConfigOption('k', None, False, False, "Skip any rendered tweets that contain this regular expression pattern."),
 }
 
 
@@ -192,6 +194,13 @@ def twempest(**kwargs):
                                    "Twempest. To find the ID, open a specific tweet on the Twitter website and view the page's address: "
                                    "the long number following 'status/' is that tweet's ID."
                                    .format(config_dir_path))
+
+    if options['skip'] is not None:
+        try:
+            # Replace skip option with compiled regular expression.
+            options['skip'] = re.compile(options['skip'])
+        except re.error as e:
+            raise click.ClickException("Syntax problem with --skip regular expression: {}".format(e))
 
     template_file = kwargs['template']
 

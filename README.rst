@@ -104,6 +104,8 @@ Run ``twempest --help`` to view the usage instructions:
                               Required, unless the ID has already been recorded in
                               the config path directory after a previous run of
                               Twempest.
+      -k, --skip TEXT         Skip any rendered tweets that contain this regular
+                              expression pattern.
       -V, --version           Show version and exit.
       -h, --help              Show this message and exit.
 
@@ -159,6 +161,9 @@ Contents of ``twempest.config.sample``:
     # Since this isn't specified (and normally wouldn't be in a config file), there
     # must already be an ID recorded in the config path directory after a previous
     # run of Twempest.
+
+    # Don't skip any tweets.
+    # skip=
 
     [twitter]
     # Visit https://apps.twitter.com/ to generate these keys, secrets, tokens, and
@@ -254,7 +259,7 @@ with variables ``text`` and ``url`` to format each.
 Transform the given text into a suitable file name that is also scrubbed
 of URLs and hashtags.
 
-*README.md generated February 27, 2017*
+*README.md generated March 5, 2017*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/

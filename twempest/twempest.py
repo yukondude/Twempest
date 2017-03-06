@@ -65,6 +65,7 @@ def render(auth_keys, options, template_text, echo):
             os.makedirs(render_dir_path, exist_ok=True)
             render_file_name = render_file_name_template.render(tweet=tweet)
             render_file_path = os.path.join(render_dir_path, render_file_name)
+            downloaded_image_file_paths = []
 
             if options['image-path']:
                 image_dir_path = os.path.abspath(image_dir_path_template.render(tweet=tweet))
@@ -90,6 +91,7 @@ def render(auth_keys, options, template_text, echo):
 
                     try:
                         request.urlretrieve(image_download_url, image_file_path)
+                        downloaded_image_file_paths.append(image_file_path)
                     except request.URLError as e:
                         raise TwempestError("Unable to download image file: {}".format(e))
                     except OSError as e:
@@ -100,9 +102,24 @@ def render(auth_keys, options, template_text, echo):
                      err=True)
                 continue
 
+            rendered_tweet = template.render(tweet=tweet)
+
+            if options['skip'].search(rendered_tweet) is not None:
+                echo("Warning: Skipping tweet ID {} ('{}{}') because its rendered form matches the --skip pattern."
+                     .format(tweet.id, tweet.text[:30], "..." if len(tweet.text) > 30 else ""), err=True)
+
+                # Clean up any downloaded images for the skipped tweet. Clunky, but simpler than avoiding downloading in the first place.
+                for path in downloaded_image_file_paths:
+                    try:
+                        os.unlink(path)
+                    except OSError as e:
+                        echo("Warning: Unable to delete downloaded image file: {}".format(e), err=True)
+
+                continue
+
             try:
                 with open(render_file_path, 'a') as f:
-                    f.write(template.render(tweet=tweet))
+                    f.write(rendered_tweet)
             except OSError as e:
                 raise TwempestError("Unable to write rendered tweet: {}".format(e))
         else:

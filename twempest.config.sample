@@ -44,6 +44,9 @@
 # must already be an ID recorded in the config path directory after a previous
 # run of Twempest.
 
+# Don't skip any tweets.
+# skip=
+
 [twitter]
 # Visit https://apps.twitter.com/ to generate these keys, secrets, tokens, and
 # token secrets. Secret tokens? Token keys? Secret secrets?
