@@ -22,7 +22,7 @@ install:
 - travis_retry python setup.py install
 
 script:
-  py.test --cov=scripnix/pybin --cov=tests --cov-report=term-missing --cov-fail-under=80 --flake8 scripnix tests
+  py.test --cov=twempest --cov=tests --cov-report=term-missing --cov-fail-under=80 --flake8 scripnix tests
 
-#after_success:
-#- bash <(curl -s https://codecov.io/bash)
+after_success:
+- bash <(curl -s https://codecov.io/bash)
