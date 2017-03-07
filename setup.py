@@ -57,7 +57,7 @@ setup(
     author="Dave Rogers",
     author_email="thedude@yukondude.com",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Intended Audience :: End Users/Desktop",

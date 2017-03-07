@@ -21,10 +21,10 @@ Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for det
 
 ## Change Log
 
-The current version is 0.1.6.
+The current version is 0.2.1.
 Twempest is [semver](http://semver.org/)-ish in its versioning scheme.
 
-Twempest is currently an alpha release, so expect many many breaking changes.
+Twempest is currently a beta release, so expect a few breaking changes.
 
 ## Installation
 
@@ -215,4 +215,4 @@ Replace non-image URLs and hashtag links, using the template tag_format with var
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated March 6, 2017*
+*README.md generated March 7, 2017*

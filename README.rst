@@ -20,11 +20,10 @@ for details.
 Change Log
 ----------
 
-The current version is 0.1.6. Twempest is
+The current version is 0.2.1. Twempest is
 `semver <http://semver.org/>`__-ish in its versioning scheme.
 
-Twempest is currently an alpha release, so expect many many breaking
-changes.
+Twempest is currently a beta release, so expect a few breaking changes.
 
 Installation
 ------------
@@ -264,7 +263,7 @@ with variables ``text`` and ``url`` to format each.
 Transform the given text into a suitable file name that is also scrubbed
 of URLs and hashtags.
 
-*README.md generated March 6, 2017*
+*README.md generated March 7, 2017*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
