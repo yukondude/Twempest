@@ -20,7 +20,7 @@ for details.
 Change Log
 ----------
 
-The current version is 0.2.3. Twempest is
+The current version is 0.2.4. Twempest is
 `semver <http://semver.org/>`__-ish in its versioning scheme.
 
 Twempest is currently a beta release, so expect a few breaking changes.
