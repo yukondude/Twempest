@@ -93,7 +93,7 @@ setup(
     packages=find_packages(),
     platforms=["MacOS", "Linux"],
     tests_require=gather_requirements("requirements-test.txt"),
-    url="https://yukondude.github.io/Twempest/",
+    url="https://github.com/yukondude/Twempest",
     version=twempest.__version__,
     zip_safe=False
 )
