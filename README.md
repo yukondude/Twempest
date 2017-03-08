@@ -170,6 +170,7 @@ date: '{{ tweet.created_at }}'
 tweet_id: {{ tweet.id }}
 ---
 {{ tweet.text|relink("[{{text}}]({{url}})")|reimage("![{{alt}}]({{url}})") }}
+[tweet](https://twitter.com/{{tweet.user.screen_name}}/status/{{ tweet.id }})
 ```
 
 The rendered output of this template might look something like the following:
@@ -183,6 +184,7 @@ tweet_id: 806229878861201408
 ---
 Ice fog "boiling" up from the [#Yukon](https://twitter.com/hashtag/yukon) River.
 ![2016-12-06-ice-fog-boiling-up-from-the-yukon-river-0](/media/2016-12-06-ice-fog-boiling-up-from-the-yukon-river-0.jpg)
+[tweet](https://twitter.com/yukondude/status/806229878861201408)
 ```
 
 ## `tweet` Context Variable
@@ -215,4 +217,4 @@ Replace non-image URLs and hashtag links, using the template tag_format with var
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated March 7, 2017*
+*README.md generated March 8, 2017*
