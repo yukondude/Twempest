@@ -63,8 +63,8 @@ def reimage(ctx, text, tag_format):
 
 @jinja2.contextfilter
 def relink(ctx, text, tag_format):
-    """ Add non-image URLs and hashtag links to the given text, following the template tag_format with variables 'text' and 'url', using the
-        context's tweet status object to supply the necessary values.
+    """ Add non-image URLs, hashtag, and user mention links to the given text, following the template tag_format with variables 'text' and
+        'url', using the context's tweet status object to supply the necessary values.
     """
     tweet_entities = ctx.parent['tweet'].entities
     link_template = jinja2.Template(tag_format)
@@ -79,6 +79,11 @@ def relink(ctx, text, tag_format):
 
     for media in (m for m in tweet_entities.get('media', []) if m['type'] != 'photo'):
         text = text.replace(media['url'], link_template.render(text=url['display_url'], url=url['expanded_url']))
+
+    for mention in tweet_entities.get('user_mentions', []):
+        mention_text = mention['screen_name']
+        mention_url = "https://twitter.com/{}".format(mention_text)
+        text = text.replace('@' + mention_text, link_template.render(text='@' + mention_text, url=mention_url))
 
     return text
 
