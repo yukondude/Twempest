@@ -4,12 +4,14 @@
 # This file is part of Twempest. Copyright 2017 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public License, version 3.
 # Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
-import jinja2
 import os
+import pprint
+import urllib.request as request
+
+import jinja2
 import pytz
 import tweepy
 import tzlocal
-import urllib.request as request
 
 from .filters import ALL_FILTERS
 
@@ -80,10 +82,10 @@ def render(auth_keys, options, template_text, echo):
 
                     # Inject the downloaded image URL into the tweet status object and backup the original media URL(s) just in case.
                     is_https = image_url_path.lower().startswith("https")
-                    media['media_url_https'] = image_url_path if is_https else None
                     media['original_media_url_https'] = media['media_url_https']
-                    media['media_url'] = image_url_path if not is_https else None
+                    media['media_url_https'] = image_url_path if is_https else None
                     media['original_media_url'] = media['media_url']
+                    media['media_url'] = image_url_path if not is_https else None
 
                     if os.path.exists(image_file_path):
                         echo("Warning: Skipping existing image file '{}'.".format(image_file_path), err=True)
