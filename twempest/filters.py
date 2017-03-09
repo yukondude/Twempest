@@ -38,7 +38,7 @@ def isodate(date):
 
 
 @jinja2.contextfilter
-def reimage(ctx, text, tag_format):
+def reimage(ctx, text, tag_format, delimiter=" "):
     """ Remove image URLs and append them to the end of the given text, following the template tag_format with variables 'alt' and 'url',
         using the context's tweet status object to supply the necessary values.
     """
@@ -56,7 +56,7 @@ def reimage(ctx, text, tag_format):
     text = text.rstrip()
 
     for image_alt, image_url in images:
-        text += " " + image_template.render(alt=image_alt, url=image_url)
+        text += delimiter + image_template.render(alt=image_alt, url=image_url)
 
     return text
 

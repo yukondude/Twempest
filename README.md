@@ -208,13 +208,14 @@ Remove URLs and hashtag '#' prefixes.
 ### `isodate`
 Format a date as YYYY-MM-DD.
 
-### `reimage(tag_format)`
-Remove image URLs and append them to the end, using the template tag_format with variables `alt` and `url` to format each.
+### `reimage(tag_format, delimiter=" ")`
+Remove image URLs and append them to the end (following the delimiter), using the template tag_format with variables `alt` and `url` to
+format each.
 
 ### `relink(tag_format)`
-Replace non-image URLs and hashtag links, using the template tag_format with variables `text` and `url` to format each.
+Replace non-image URLs, hashtag, and user mention links, using the template tag_format with variables `text` and `url` to format each.
 
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated March 8, 2017*
+*README.md generated March 9, 2017*
