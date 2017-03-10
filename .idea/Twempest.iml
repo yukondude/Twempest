@@ -9,6 +9,7 @@
       <excludeFolder url="file://$MODULE_DIR$/output" />
       <excludeFolder url="file://$MODULE_DIR$/twempest.egg-info" />
     </content>
+    <content url="file://$MODULE_DIR$/../homebrew-tap" />
     <orderEntry type="jdk" jdkName="Python 3.6.0 virtualenv at ~/.virtualenvs/Twempest" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
