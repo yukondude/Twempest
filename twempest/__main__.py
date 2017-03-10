@@ -12,7 +12,7 @@ import re
 
 import click
 
-from .twempest import render, TwempestError
+from .twempest import retrieve, TwempestError
 
 
 # Global config 'constants'.
@@ -220,7 +220,7 @@ def twempest(**kwargs):
         click.echo(template_text)
     else:
         try:
-            last_tweet_id = render(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
+            last_tweet_id = retrieve(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
         except TwempestError as e:
             raise click.ClickException(e)
 

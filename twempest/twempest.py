@@ -27,10 +27,9 @@ def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access
     return tweepy.API(auth)
 
 
-def render(auth_keys, options, template_text, echo):
-    """ Using the given authorization credentials and rendering options, retrieve the tweets from the authorized user's timeline and render
-        them using the given template text. Also download images if requested. Write any warning messages to the console using the passed
-        echo() function, and raise all errors as TwempestError.
+def render(tweets, options, template_text, echo):
+    """ Render the given tweets using the supplied template text. Also download images if requested. Write any warning messages to the
+        console using the passed echo() function, and raise all errors as TwempestError.
     """
     env = jinja2.Environment()
     env.filters.update(ALL_FILTERS)
@@ -41,18 +40,10 @@ def render(auth_keys, options, template_text, echo):
     render_file_name_template = env.from_string(options['render-file']) if options['render-file'] else None
     render_dir_path_template = env.from_string(options['render-path'])
 
-    api = authenticate_twitter_api(**auth_keys)
-
     gmt_tz = pytz.timezone('UTC')
     local_tz = tzlocal.get_localzone()
 
     last_tweet_id = None
-
-    try:
-        tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())
-    except tweepy.TweepError as e:
-        raise TwempestError("Unable to retrieve tweets. Twitter API responded with '{}'. "
-                            "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))
 
     for tweet in reversed(tweets):
         # Replace UTC created time with local time.
@@ -133,3 +124,17 @@ def render(auth_keys, options, template_text, echo):
         echo("Warning: No tweets were retrieved.", err=True)
 
     return last_tweet_id
+
+
+def retrieve(auth_keys, options, template_text, echo):
+    """ Using the given authorization credentials and rendering options, retrieve and render the tweets from the authorized user's timeline.
+    """
+    api = authenticate_twitter_api(**auth_keys)
+
+    try:
+        tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())
+    except tweepy.TweepError as e:
+        raise TwempestError("Unable to retrieve tweets. Twitter API responded with '{}'. "
+                            "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))
+
+    return render(tweets, options, template_text, echo)
