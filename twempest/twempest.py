@@ -27,6 +27,17 @@ def authenticate_twitter_api(consumer_key, consumer_secret, access_token, access
     return tweepy.API(auth)
 
 
+def cleanup_downloaded_images(downloaded_image_file_paths, echo):
+    """ Clean up any downloaded images for the skipped tweet. Clunky, but simpler than avoiding downloading in the first place. Warn of any
+        image files that couldn't be deleted using the passed echo() function but continue on regardless.
+    """
+    for path in downloaded_image_file_paths:
+        try:
+            os.unlink(path)
+        except OSError as e:
+            echo("Warning: Unable to delete downloaded image file: {}".format(e), err=True)
+
+
 def download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, echo):
     """ Download any images for the given tweet, storing them in the rendered image directory path template and updating their URLs with the
         rendered image URL path template. Echo any skipped images that already exist to the console using the passed echo() function.
@@ -94,12 +105,8 @@ def render(tweets, options, template_text, echo):
             os.makedirs(render_dir_path, exist_ok=True)
             render_file_name = render_file_name_template.render(tweet=tweet)
             render_file_path = os.path.join(render_dir_path, render_file_name)
-
-            if options['image-path']:
-                downloaded_image_file_paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name,
-                                                              echo)
-            else:
-                downloaded_image_file_paths = []
+            downloaded_image_file_paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, echo)\
+                if options['image-path'] else []
 
             if not options['append'] and os.path.exists(render_file_path):
                 echo("Warning: Skipping existing file '{}'. Use --append to append rendered tweets instead.".format(render_file_path),
@@ -111,14 +118,7 @@ def render(tweets, options, template_text, echo):
             if options['skip'] and options['skip'].search(rendered_tweet) is not None:
                 echo("Warning: Skipping tweet ID {} ('{}{}') because its rendered form matches the --skip pattern."
                      .format(tweet.id, tweet.text[:30], "..." if len(tweet.text) > 30 else ""), err=True)
-
-                # Clean up any downloaded images for the skipped tweet. Clunky, but simpler than avoiding downloading in the first place.
-                for path in downloaded_image_file_paths:
-                    try:
-                        os.unlink(path)
-                    except OSError as e:
-                        echo("Warning: Unable to delete downloaded image file: {}".format(e), err=True)
-
+                cleanup_downloaded_images(downloaded_image_file_paths, echo)
                 continue
 
             try:
