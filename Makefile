@@ -21,17 +21,19 @@ docs: README.rst
 	@$(MAKE)
 
 build: clean docs
-	@$(MAKE)
 	./setup.py sdist >/dev/null
 	./setup.py bdist_wheel >/dev/null
 
-bump:
+deploy:
 	./setup.py test
-	./bump-version.py
 	@$(MAKE) build
 	ls dist/*.whl | xargs -I{} twine register {}
 	ls dist/*.whl | xargs -I{} twine upload {}
 	ls dist/*.tar.gz | xargs -I{} twine upload {}
+
+bump:
+	./bump-version.py
+	@$(MAKE) deploy
 	@echo "Commit the changes: git add . ; git commit -m<comment>"
 	@echo "Tag the version: git tag -a <bumpedversion> -m<comment>"
 	@echo "Push to GitHub: git push --follow-tags"
