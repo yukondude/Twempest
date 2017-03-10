@@ -6,13 +6,13 @@
 
 import datetime
 import os
-import pickle
 import re
 
 # noinspection PyPackageRequirements
 import pytest
 
 from twempest.filters import delink, isodate, reimage, relink, slugify
+from .fixtures import tweets_fixture
 
 
 class MockContext:
@@ -24,10 +24,7 @@ class MockContext:
 
 @pytest.fixture
 def tweets():
-    """ Just a whole mess--well, eleven--of pickled sample tweets from late 2016 to test with.
-    """
-    pickle_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "sample_tweets.p")
-    return pickle.load(open(pickle_path, "rb"))
+    return tweets_fixture()
 
 
 # noinspection PyShadowingNames
