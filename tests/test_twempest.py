@@ -12,7 +12,12 @@ from click import echo
 from click.testing import CliRunner
 
 from twempest.twempest import cleanup_downloaded_images
-from .fixtures import tweets_fixture
+from .fixtures import MockEcho, tweets_fixture
+
+
+@pytest.fixture
+def mock_echo():
+    return MockEcho()
 
 
 @pytest.fixture
@@ -20,7 +25,8 @@ def tweets():
     return tweets_fixture()
 
 
-def test_cleanup_downloaded_images():
+# noinspection PyShadowingNames
+def test_cleanup_downloaded_images(mock_echo):
     with CliRunner().isolated_filesystem():
         image_file_paths = []
 
@@ -32,24 +38,18 @@ def test_cleanup_downloaded_images():
                 f.write("foo")
 
         cleanup_downloaded_images(image_file_paths, echo)
+        assert len(mock_echo.errs) == len(mock_echo.messages) == 0
 
         for path in image_file_paths:
             assert not os.path.exists(path)
 
 
-def test_cleanup_downloaded_images_fail_cant_delete():
-    mock_message = []
-    mock_err = []
-
-    def mock_echo(message=None, err=False):
-        mock_message.append(message)
-        mock_err.append(err)
-
+# noinspection PyShadowingNames
+def test_cleanup_downloaded_images_fail_cant_delete(mock_echo):
     with CliRunner().isolated_filesystem():
         image_file_path = os.path.join(".", "quux.jpg")
-        cleanup_downloaded_images([image_file_path], mock_echo)
-
-        assert len(mock_err) == len(mock_message) == 1
-        assert mock_err[0]
-        assert mock_message[0].startswith("Warning: Unable to delete downloaded image file:")
-        assert image_file_path in mock_message[0]
+        cleanup_downloaded_images([image_file_path], mock_echo.echo)
+        assert len(mock_echo.errs) == len(mock_echo.messages) == 1
+        assert mock_echo.errs[0]
+        assert mock_echo.messages[0].startswith("Warning: Unable to delete downloaded image file:")
+        assert image_file_path in mock_echo.messages[0]
