@@ -40,7 +40,8 @@ def cleanup_downloaded_images(downloaded_image_file_paths, echo):
 
 def download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, echo):
     """ Download any images for the given tweet, storing them in the rendered image directory path template and updating their URLs with the
-        rendered image URL path template. Echo any skipped images that already exist to the console using the passed echo() function.
+        rendered image URL path template. Echo any skipped images that already exist to the console using the passed echo() function. Return
+        the list of file paths for the downloaded images.
     """
     downloaded_image_file_paths = []
     image_dir_path = os.path.abspath(image_dir_path_template.render(tweet=tweet))
