@@ -38,7 +38,18 @@ def cleanup_downloaded_images(downloaded_image_file_paths, echo):
             echo("Warning: Unable to delete downloaded image file: {}".format(e), err=True)
 
 
-def download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, echo):
+def download_from_url(url, file_path):
+    """ Download the file at the given url and store it at the given file path. Raise a TwempestError exception if anything goes wrong.
+    """
+    try:
+        request.urlretrieve(url, file_path)
+    except request.URLError as e:
+        raise TwempestError("Unable to download image file: {}".format(e))
+    except OSError as e:
+        raise TwempestError("Unable to write downloaded image file: {}".format(e))
+
+
+def download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, download_func, echo):
     """ Download any images for the given tweet, storing them in the rendered image directory path template and updating their URLs with the
         rendered image URL path template. Echo any skipped images that already exist to the console using the passed echo() function. Return
         the list of file paths for the downloaded images.
@@ -65,18 +76,13 @@ def download_images(tweet, image_dir_path_template, image_url_path_template, ren
             echo("Warning: Skipping existing image file '{}'.".format(image_file_path), err=True)
             continue
 
-        try:
-            request.urlretrieve(image_download_url, image_file_path)
-            downloaded_image_file_paths.append(image_file_path)
-        except request.URLError as e:
-            raise TwempestError("Unable to download image file: {}".format(e))
-        except OSError as e:
-            raise TwempestError("Unable to write downloaded image file: {}".format(e))
+        download_func(image_download_url, image_file_path)
+        downloaded_image_file_paths.append(image_file_path)
 
     return downloaded_image_file_paths
 
 
-def render(tweets, options, template_text, echo):
+def render(tweets, options, template_text, download_func, echo):
     """ Render the given tweets using the supplied template text. Also download images if requested. Write any warning messages to the
         console using the passed echo() function, and raise all errors as TwempestError.
     """
@@ -106,8 +112,8 @@ def render(tweets, options, template_text, echo):
             os.makedirs(render_dir_path, exist_ok=True)
             render_file_name = render_file_name_template.render(tweet=tweet)
             render_file_path = os.path.join(render_dir_path, render_file_name)
-            downloaded_image_file_paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, echo)\
-                if options['image-path'] else []
+            downloaded_image_file_paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name,
+                                                          download_func, echo) if options['image-path'] else []
 
             if not options['append'] and os.path.exists(render_file_path):
                 echo("Warning: Skipping existing file '{}'. Use --append to append rendered tweets instead.".format(render_file_path),
@@ -150,4 +156,4 @@ def retrieve(auth_keys, options, template_text, echo):
         raise TwempestError("Unable to retrieve tweets. Twitter API responded with '{}'. "
                             "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))
 
-    return render(tweets, options, template_text, echo)
+    return render(tweets, options, template_text, download_from_url, echo)

@@ -19,6 +19,15 @@ from .fixtures import MockEcho, tweets_fixture
 IMAGE_TWEET_IDS = ("806229878861201408", "810533832529219584", "812831603051220992", "814688934835826688")
 
 
+def mock_download(url, file_path):
+    """ Write a ~100KB file to file_path as if it were downloaded.
+    """
+    with open(file_path, 'wb') as f:
+        f.write(url.encode('utf-8'))
+        f.seek(1024 * 1024)
+        f.write(b'0')
+
+
 @pytest.fixture
 def mock_echo():
     return MockEcho()
@@ -69,7 +78,8 @@ def test_download_images(mock_echo, tweets):
     with CliRunner().isolated_filesystem():
         for tweet in tweets:
             render_file_name = "tweet_{}_file.md".format(tweet.id)
-            paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_echo.echo)
+            paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_download,
+                                    mock_echo.echo)
 
             if paths:
                 image_paths.append(paths[0])
