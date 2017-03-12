@@ -12,11 +12,13 @@ import jinja2
 # noinspection PyPackageRequirements
 import pytest
 
-from twempest.twempest import cleanup_downloaded_images, download_images
+from twempest.twempest import cleanup_downloaded_images, download_from_url, download_images, TwempestError
 from .fixtures import MockEcho, tweets_fixture
 
 
 IMAGE_TWEET_IDS = ("806229878861201408", "810533832529219584", "812831603051220992", "814688934835826688")
+TEST_IMAGE_URL = "http://placehold.it/10x10.jpg"
+TEST_IMAGE_SIZE = 3881
 
 
 def mock_download(url, file_path):
@@ -66,6 +68,40 @@ def test_cleanup_downloaded_images_fail_cant_delete(mock_echo):
         assert mock_echo.errs[0]
         assert mock_echo.messages[0].startswith("Warning: Unable to delete downloaded image file:")
         assert image_file_path in mock_echo.messages[0]
+
+
+def test_download_from_url():
+    with CliRunner().isolated_filesystem():
+        path = os.path.join("download", "test.jpg")
+        os.mkdir("download")
+        download_from_url(TEST_IMAGE_URL, path)
+        assert os.path.exists(path)
+        stat_info = os.stat(path)
+        assert stat_info.st_size == TEST_IMAGE_SIZE
+
+
+def test_download_from_url_fail_url():
+    with CliRunner().isolated_filesystem():
+        path = os.path.join("download", "test.jpg")
+        os.mkdir("download")
+
+        with pytest.raises(TwempestError) as excinfo:
+            download_from_url("http://test.com/doesntexist", path)
+
+        assert "Unable to download image file:" in str(excinfo.value)
+        assert not os.path.exists(path)
+
+
+def test_download_from_url_fail_save():
+    with CliRunner().isolated_filesystem():
+        path = os.path.join("download", "test.jpg")
+        os.mkdir("download", 0o111)
+
+        with pytest.raises(TwempestError) as excinfo:
+            download_from_url(TEST_IMAGE_URL, path)
+
+        assert "Unable to write downloaded image file:" in str(excinfo.value)
+        assert not os.path.exists(path)
 
 
 # noinspection PyShadowingNames
