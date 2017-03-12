@@ -14,6 +14,10 @@ class MockEcho:
     messages = []
     errs = []
 
+    def __init__(self):
+        del MockEcho.messages[:]
+        del MockEcho.errs[:]
+
     @staticmethod
     def echo(message, err=False):
         MockEcho.messages.append(message)
