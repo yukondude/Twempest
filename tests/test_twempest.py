@@ -16,7 +16,7 @@ from twempest.twempest import cleanup_downloaded_images, download_from_url, down
 from .fixtures import MockEcho, tweets_fixture
 
 
-IMAGE_TWEET_IDS = ("806229878861201408", "810533832529219584", "812831603051220992", "814688934835826688")
+IMAGE_TWEET_IDS = (806229878861201408, 810533832529219584, 812831603051220992, 814688934835826688)
 TEST_IMAGE_URL = "http://placehold.it/10x10.jpg"
 TEST_IMAGE_SIZE = 3881
 
@@ -24,7 +24,7 @@ TEST_IMAGE_SIZE = 3881
 def mock_download(url, file_path):
     """ Write a ~100KB file to file_path as if it were downloaded.
     """
-    with open(file_path, 'wb') as f:
+    with open(file_path, "wb") as f:
         f.write(url.encode('utf-8'))
         f.seek(1024 * 1024)
         f.write(b'0')
@@ -114,13 +114,26 @@ def test_download_images(mock_echo, tweets):
     with CliRunner().isolated_filesystem():
         for tweet in tweets:
             render_file_name = "tweet_{}_file.md".format(tweet.id)
+
+            if tweet.id == IMAGE_TWEET_IDS[-1]:
+                with open(os.path.join("images", "tweet_{}_file-0.jpg".format(tweet.id)), "wb") as f:
+                    f.seek(1024 * 1024)
+                    f.write(b'0')
+
             paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_download,
                                     mock_echo.echo)
 
             if paths:
                 image_paths.append(paths[0])
 
-        for tweet_id in IMAGE_TWEET_IDS:
+            if tweet.id == IMAGE_TWEET_IDS[-1]:
+                assert len(mock_echo.messages) == 1
+                assert "Warning: Skipping existing image file" in mock_echo.messages[0]
+                assert str(tweet.id) in mock_echo.messages[0]
+
+        assert len(image_paths) == len(IMAGE_TWEET_IDS) - 1
+
+        for tweet_id in IMAGE_TWEET_IDS[:-1]:
             path = os.path.join("images", "tweet_{}_file-0.jpg".format(tweet_id))
             assert os.path.exists(path)
             stat_info = os.stat(path)
