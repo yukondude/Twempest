@@ -88,10 +88,5 @@ def test_download_images(mock_echo, tweets):
             path = os.path.join("images", "tweet_{}_file-0.jpg".format(tweet_id))
             assert os.path.exists(path)
             stat_info = os.stat(path)
-            assert stat_info.st_size > 10000
-
-            for ipath in image_paths:
-                if ipath.endswith(path):
-                    break
-            else:
-                assert False, "Expected image path for '{}' not found.".format(path)
+            assert stat_info.st_size > 1024 * 1024
+            assert len([1 for p in image_paths if p.endswith(path)]) == 1, "path '{}' not found in image_paths list.".format(path)
