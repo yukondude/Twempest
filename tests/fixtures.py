@@ -19,7 +19,7 @@ class MockEcho:
         del MockEcho.errs[:]
 
     @staticmethod
-    def echo(message, err=False):
+    def echo(message="", err=False):
         MockEcho.messages.append(message)
         MockEcho.errs.append(err)
 
