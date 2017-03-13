@@ -98,9 +98,10 @@ def render(tweets, options, template_text, download_func, echo):
     gmt_tz = pytz.timezone('UTC')
     local_tz = tzlocal.get_localzone()
 
+    count_remaining = options['count']
     last_tweet_id = None
 
-    for tweet in reversed(tweets):
+    for tweet in tweets:
         # Replace UTC created time with local time.
         tweet.created_at = gmt_tz.localize(tweet.created_at).astimezone(local_tz)
 
@@ -139,6 +140,13 @@ def render(tweets, options, template_text, download_func, echo):
 
         last_tweet_id = tweet.id
 
+        # Check the count here as the list has already been "filtered" by this point and so the count remaining reflects the actual number
+        # of tweets left to render.
+        count_remaining -= 1
+
+        if count_remaining == 0:
+            break
+
     if not last_tweet_id:
         echo("Warning: No tweets were retrieved.", err=True)
 
@@ -151,7 +159,7 @@ def retrieve(auth_keys, options, template_text, echo):
     api = authenticate_twitter_api(**auth_keys)
 
     try:
-        tweets = list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items())
+        tweets = reversed(list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items()))
     except tweepy.TweepError as e:
         raise TwempestError("Unable to retrieve tweets. Twitter API responded with '{}'. "
                             "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))

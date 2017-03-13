@@ -152,7 +152,41 @@ def test_twempest_fail_3_missing_auth():
         assert result.exit_code != 0
 
 
-def test_twempest_fail_4_image_path_no_render_file():
+def test_twempest_fail_4_count_not_integer():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twempest]\n[twitter]\nconsumer_key=a\nconsumer_secret=b\naccess_token=c\naccess_token_secret=d")
+
+        result = runner.invoke(twempest, ["-c", ".", "-n", "'foo'", "template"])
+        assert "The --count option must be an integer:" in result.output
+        assert result.exit_code != 0
+
+
+def test_twempest_fail_5_count_too_low():
+    with CliRunner().isolated_filesystem():
+        runner = CliRunner()
+        result = runner.invoke(twempest, [])
+        assert result.exit_code != 0
+
+        with open('template', 'w') as f:
+            f.write("{{ tweet.text }}")
+
+        with open(CONFIG_FILE_NAME, 'w') as f:
+            f.write("[twempest]\n[twitter]\nconsumer_key=a\nconsumer_secret=b\naccess_token=c\naccess_token_secret=d")
+
+        result = runner.invoke(twempest, ["-c", ".", "-n", "0", "template"])
+        assert "The --count option must be at least 1." in result.output
+        assert result.exit_code != 0
+
+
+def test_twempest_fail_6_image_path_no_render_file():
     with CliRunner().isolated_filesystem():
         runner = CliRunner()
         result = runner.invoke(twempest, [])
@@ -169,7 +203,7 @@ def test_twempest_fail_4_image_path_no_render_file():
         assert result.exit_code != 0
 
 
-def test_twempest_fail_5_image_url_no_image_path():
+def test_twempest_fail_7_image_url_no_image_path():
     with CliRunner().isolated_filesystem():
         runner = CliRunner()
         result = runner.invoke(twempest, [])
@@ -186,7 +220,7 @@ def test_twempest_fail_5_image_url_no_image_path():
         assert result.exit_code != 0
 
 
-def test_twempest_fail_6_no_since_id():
+def test_twempest_fail_8_no_since_id():
     with CliRunner().isolated_filesystem():
         runner = CliRunner()
         result = runner.invoke(twempest, [])
@@ -203,7 +237,7 @@ def test_twempest_fail_6_no_since_id():
         assert result.exit_code != 0
 
 
-def test_twempest_fail_7_bad_skip_re():
+def test_twempest_fail_9_bad_skip_re():
     with CliRunner().isolated_filesystem():
         runner = CliRunner()
         result = runner.invoke(twempest, [])
@@ -220,7 +254,7 @@ def test_twempest_fail_7_bad_skip_re():
         assert result.exit_code != 0
 
 
-def test_twempest_fail_9_response_401():
+def test_twempest_fail_10_response_401():
     with CliRunner().isolated_filesystem():
         runner = CliRunner()
         result = runner.invoke(twempest, [])

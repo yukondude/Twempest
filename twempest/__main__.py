@@ -25,6 +25,7 @@ ConfigOption = collections.namedtuple('ConfigOption', "short default show_defaul
 CONFIG_OPTIONS = {
     'append': ConfigOption(short='a', default=False, show_default=False, is_flag=True,
                            help="Append rendered tweet(s) to existing file(s) rather than skipping past with a warning."),
+    'count': ConfigOption('n', 200, True, False, "Maximum number of tweets to retrieve. The actual number may be lower."),
     'dry-run': ConfigOption('D', False, False, True, "Display all configuration options and template contents without retrieving tweets."),
     'image-path': ConfigOption('i', None, False, False, "The directory path (template tags allowed) to write downloaded image "
                                                         "(media type == 'photo') files. "
@@ -181,6 +182,14 @@ def twempest(**kwargs):
 
     options = choose_option_values(config_options=CONFIG_OPTIONS, cli_options=kwargs, config=twempest_config)
     options['config-path'] = config_file_path
+
+    try:
+        options['count'] = int(options['count'])
+    except ValueError as e:
+        raise click.ClickException("The --count option must be an integer: {}".format(e))
+
+    if options['count'] < 1:
+        raise click.ClickException("The --count option must be at least 1.")
 
     if options['image-path'] and not options['render-file']:
         raise click.ClickException("Cannot download images unless the --render-file option is also specified.")

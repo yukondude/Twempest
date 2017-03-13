@@ -12,6 +12,9 @@
 # Do not append to existing files.
 # append=false
 
+# Retrieve at most 200 tweets.
+# count=200
+
 # Retrieve tweets normally.
 # dry-run=false
 

@@ -66,6 +66,8 @@ Options:
                           file.  [default: ~/.twempest]
   -a, --append            Append rendered tweet(s) to existing file(s) rather
                           than skipping past with a warning.
+  -n, --count TEXT        Maximum number of tweets to retrieve. The actual
+                          number may be lower.  [default: 200]
   -D, --dry-run           Display all configuration options and template
                           contents without retrieving tweets.
   -i, --image-path TEXT   The directory path (template tags allowed) to write
@@ -111,6 +113,9 @@ Contents of `twempest.config.sample`:
 
 # Do not append to existing files.
 # append=false
+
+# Retrieve at most 200 tweets.
+# count=200
 
 # Retrieve tweets normally.
 # dry-run=false
@@ -218,4 +223,4 @@ Replace non-image URLs, hashtag, and user mention links, using the template tag_
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated March 9, 2017*
+*README.md generated March 13, 2017*
