@@ -86,6 +86,20 @@ def render(tweets, options, template_text, download_func, echo):
     """ Render the given tweets using the supplied template text. Also download images if requested. Write any warning messages to the
         console using the passed echo() function, and raise all errors as TwempestError.
     """
+    def write_to_console(text):
+        echo(text)
+        echo()
+
+    def write_to_file(path):
+        def write_to_file_inner(text):
+            try:
+                with open(path, 'a') as f:
+                    f.write(text)
+            except OSError as e:
+                raise TwempestError("Unable to write rendered tweet: {}".format(e))
+
+        return write_to_file_inner
+
     env = jinja2.Environment()
     env.filters.update(ALL_FILTERS)
     template = env.from_string(template_text)
@@ -121,23 +135,20 @@ def render(tweets, options, template_text, download_func, echo):
                      err=True)
                 continue
 
-            rendered_tweet = template.render(tweet=tweet)
-
-            if options['skip'] and options['skip'].search(rendered_tweet) is not None:
-                echo("Warning: Skipping tweet ID {} ('{}{}') because its rendered form matches the --skip pattern."
-                     .format(tweet.id, tweet.text[:30], "..." if len(tweet.text) > 30 else ""), err=True)
-                cleanup_downloaded_images(downloaded_image_file_paths, echo)
-                continue
-
-            try:
-                with open(render_file_path, 'a') as f:
-                    f.write(rendered_tweet)
-            except OSError as e:
-                raise TwempestError("Unable to write rendered tweet: {}".format(e))
+            write_func = write_to_file(render_file_path)
         else:
-            echo(template.render(tweet=tweet))
-            echo()
+            downloaded_image_file_paths = []
+            write_func = write_to_console
 
+        rendered_tweet = template.render(tweet=tweet)
+
+        if options['skip'] and options['skip'].search(rendered_tweet) is not None:
+            echo("Warning: Skipping tweet ID {} ('{}{}') because its rendered form matches the --skip pattern."
+                 .format(tweet.id, tweet.text[:30], "..." if len(tweet.text) > 30 else ""), err=True)
+            cleanup_downloaded_images(downloaded_image_file_paths, echo)
+            continue
+
+        write_func(rendered_tweet)
         last_tweet_id = tweet.id
 
         # Check the count here as the list has already been "filtered" by this point and so the count remaining reflects the actual number
