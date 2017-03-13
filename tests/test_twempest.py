@@ -12,7 +12,8 @@ import jinja2
 # noinspection PyPackageRequirements
 import pytest
 
-from twempest.twempest import cleanup_downloaded_images, download_from_url, download_images, TwempestError
+from twempest.twempest import cleanup_downloaded_images, download_from_url, download_images, render, TwempestError
+from twempest.__main__ import CONFIG_OPTIONS
 from .fixtures import MockEcho, tweets_fixture
 
 
@@ -193,3 +194,17 @@ def test_download_images_media_update(mock_echo, tweets):
                 assert b['media_url'] != a['media_url']
                 assert b['media_url_https'] == a['original_media_url_https']
                 assert b['media_url_https'] != a['media_url_https']
+
+
+# noinspection PyShadowingNames
+def test_render(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        last_id = render(tweets, options, template_text, mock_download, mock_echo.echo)
+        rendered_ids = [i for i in mock_echo.messages if i]
+        assert len(rendered_ids) == len(tweets)
+        assert str(last_id) == rendered_ids[-1]
+
+        for tweet in tweets:
+            assert str(tweet.id) in rendered_ids
