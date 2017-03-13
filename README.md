@@ -181,7 +181,8 @@ author: '{{ tweet.user.name|escape }}'
 date: '{{ tweet.created_at }}'
 tweet_id: {{ tweet.id }}
 ---
-{{ tweet.text|relink("[{{text}}]({{url}})")|reimage("![{{alt}}]({{url}})") }}
+{{ tweet.text|relink("[{{text}}]({{url}})")|reimage("![{{alt}}]({{url}})", "\n\n") }}
+
 [tweet](https://twitter.com/{{tweet.user.screen_name}}/status/{{ tweet.id }})
 ```
 
