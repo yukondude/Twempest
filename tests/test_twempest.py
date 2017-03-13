@@ -114,6 +114,32 @@ def test_download_images(mock_echo, tweets):
     with CliRunner().isolated_filesystem():
         for tweet in tweets:
             render_file_name = "tweet_{}_file.md".format(tweet.id)
+            paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_download,
+                                    mock_echo.echo)
+
+            if paths:
+                image_paths.append(paths[0])
+
+        assert len(image_paths) == len(IMAGE_TWEET_IDS)
+
+        for tweet_id in IMAGE_TWEET_IDS:
+            path = os.path.join("images", "tweet_{}_file-0.jpg".format(tweet_id))
+            assert os.path.exists(path)
+            stat_info = os.stat(path)
+            assert stat_info.st_size > 1024 * 1024
+            assert len([1 for p in image_paths if p.endswith(path)]) == 1, "path '{}' not found in image_paths list.".format(path)
+
+
+# noinspection PyShadowingNames
+def test_download_images_some_exist(mock_echo, tweets):
+    env = jinja2.Environment()
+    image_dir_path_template = env.from_string("images")
+    image_url_path_template = env.from_string("/images/")
+    image_paths = []
+
+    with CliRunner().isolated_filesystem():
+        for tweet in tweets:
+            render_file_name = "tweet_{}_file.md".format(tweet.id)
 
             if tweet.id == IMAGE_TWEET_IDS[-1]:
                 with open(os.path.join("images", "tweet_{}_file-0.jpg".format(tweet.id)), "wb") as f:
@@ -133,9 +159,37 @@ def test_download_images(mock_echo, tweets):
 
         assert len(image_paths) == len(IMAGE_TWEET_IDS) - 1
 
-        for tweet_id in IMAGE_TWEET_IDS[:-1]:
-            path = os.path.join("images", "tweet_{}_file-0.jpg".format(tweet_id))
-            assert os.path.exists(path)
-            stat_info = os.stat(path)
-            assert stat_info.st_size > 1024 * 1024
-            assert len([1 for p in image_paths if p.endswith(path)]) == 1, "path '{}' not found in image_paths list.".format(path)
+
+# noinspection PyShadowingNames
+def test_download_images_media_update(mock_echo, tweets):
+    env = jinja2.Environment()
+    image_dir_path_template = env.from_string("images")
+    image_url_path_template = env.from_string("/images/")
+    media_before = {}
+    media_after = {}
+
+    with CliRunner().isolated_filesystem():
+        for tweet in tweets:
+            render_file_name = "tweet_{}_file.md".format(tweet.id)
+            media_before[tweet.id] = [{'media_url': m['media_url'],
+                                       'media_url_https': m['media_url_https']}
+                                      for m in tweet.entities.get('media', []) if m['type'] == 'photo']
+
+            download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_download, mock_echo.echo)
+
+            media_after[tweet.id] = [{'media_url': m['media_url'],
+                                      'media_url_https': m['media_url_https'],
+                                      'original_media_url': m['original_media_url'],
+                                      'original_media_url_https': m['original_media_url_https']}
+                                     for m in tweet.entities.get('media', []) if m['type'] == 'photo']
+
+        for tweet_id in IMAGE_TWEET_IDS:
+            before = media_before[tweet_id]
+            after = media_after[tweet_id]
+
+            for i, b in enumerate(before):
+                a = after[i]
+                assert b['media_url'] == a['original_media_url']
+                assert b['media_url'] != a['media_url']
+                assert b['media_url_https'] == a['original_media_url_https']
+                assert b['media_url_https'] != a['media_url_https']
