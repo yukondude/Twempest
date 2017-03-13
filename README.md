@@ -78,6 +78,10 @@ Options:
                           omitted, media files will not be downloaded.
   -u, --image-url TEXT    The URL path (template tags allowed) to use for all
                           image files downloaded via the --image-path option.
+  -e, --pickle            Serialize a list of the rendered tweet statuses as a
+                          standard Python pickle byte stream. The stream will
+                          be written to 'twempest.p' in the current working
+                          directory.
   -f, --render-file TEXT  The file name (template tags allowed) for the
                           rendered tweets. If omitted, tweets will be rendered
                           to STDOUT.
@@ -125,6 +129,9 @@ Contents of `twempest.config.sample`:
 
 # Do not download image files.
 # image-url=
+
+# Do not serialize the retrieved tweets.
+# pickle=false
 
 # Render tweets to STDOUT.
 # render-file=

@@ -17,6 +17,7 @@ dist/
 .cache
 coverage.xml
 output/
+twempest.p
 
 # PyCharm dev-specific settings
 .idea/workspace.xml

@@ -5,6 +5,7 @@
 # Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
 import os
+import pickle
 import urllib.request as request
 
 import jinja2
@@ -13,6 +14,9 @@ import tweepy
 import tzlocal
 
 from .filters import ALL_FILTERS
+
+
+PICKLE_FILE_NAME = "twempest.p"
 
 
 class TwempestError(Exception):
@@ -95,8 +99,8 @@ def render(tweets, options, template_text, download_func, echo):
             try:
                 with open(path, 'a') as f:
                     f.write(text)
-            except OSError as e:
-                raise TwempestError("Unable to write rendered tweet: {}".format(e))
+            except OSError as oe:
+                raise TwempestError("Unable to write rendered tweet: {}".format(oe))
 
         return write_to_file_inner
 
@@ -114,6 +118,7 @@ def render(tweets, options, template_text, download_func, echo):
 
     count_remaining = options['count']
     last_tweet_id = None
+    pickle_tweets = []
 
     for tweet in tweets:
         # Replace UTC created time with local time.
@@ -154,12 +159,20 @@ def render(tweets, options, template_text, download_func, echo):
         # Check the count here as the list has already been "filtered" by this point and so the count remaining reflects the actual number
         # of tweets left to render.
         count_remaining -= 1
+        pickle_tweets.append(tweet)
 
         if count_remaining == 0:
             break
 
     if not last_tweet_id:
         echo("Warning: No tweets were retrieved.", err=True)
+    elif options['pickle']:
+        try:
+            with open(PICKLE_FILE_NAME, "wb") as pf:
+                pickle.dump(pickle_tweets, pf)
+        except OSError as e:
+            echo("Warning: Unable to serialize the rendered tweets to '{}' in the current working directory: {}".format(PICKLE_FILE_NAME,
+                                                                                                                        e))
 
     return last_tweet_id
 

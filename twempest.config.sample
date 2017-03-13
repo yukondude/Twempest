@@ -24,6 +24,9 @@
 # Do not download image files.
 # image-url=
 
+# Do not serialize the retrieved tweets.
+# pickle=false
+
 # Render tweets to STDOUT.
 # render-file=
 # Because template expressions are allowed for this option, you can generate
