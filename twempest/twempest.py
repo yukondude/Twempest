@@ -122,7 +122,10 @@ def render(tweets, options, template_text, download_func, echo):
 
     for tweet in tweets:
         # Replace UTC created time with local time.
-        tweet.created_at = gmt_tz.localize(tweet.created_at).astimezone(local_tz)
+        if tweet.created_at.tzinfo is None:
+            tweet.created_at = gmt_tz.localize(tweet.created_at)
+
+        tweet.created_at = tweet.created_at.astimezone(local_tz)
 
         if not options['replies'] and tweet.in_reply_to_status_id and tweet.text[0] == '@':
             continue

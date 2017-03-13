@@ -201,6 +201,7 @@ def test_render(mock_echo, tweets):
     with CliRunner().isolated_filesystem():
         template_text = "{{ tweet.id }}"
         options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        options['replies'] = True
         last_id = render(tweets, options, template_text, mock_download, mock_echo.echo)
         rendered_ids = [i for i in mock_echo.messages if i]
         assert len(rendered_ids) == len(tweets)

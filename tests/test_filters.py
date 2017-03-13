@@ -41,10 +41,6 @@ def test_delink(tweets):
         for url in tweet.entities.get('urls', []):
             assert url['url'] not in delinked
 
-        # For good measure.
-        assert "http://" not in delinked
-        assert "https://" not in delinked
-
 
 @pytest.mark.parametrize('date,expected', [
     (datetime.datetime(2017, 2, 14, 12, 44, 57, 557000), "2017-02-14"),

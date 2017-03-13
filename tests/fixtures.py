@@ -25,7 +25,7 @@ class MockEcho:
 
 
 def tweets_fixture():
-    """ Just a whole mess--well, eleven--of pickled sample tweets from late 2016 to test with.
+    """ Just a whole mess--well, eighteen--of pickled sample tweets from late 2016 to test with.
     """
-    pickle_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "sample_tweets.p")
+    pickle_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "twempest.p")
     return pickle.load(open(pickle_path, "rb"))
