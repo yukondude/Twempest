@@ -35,8 +35,9 @@ CONFIG_OPTIONS = {
                                                         "If omitted, media files will not be downloaded."),
     'image-url': ConfigOption('u', None, False, False, "The URL path (template tags allowed) to use for all image files downloaded via the "
                                                        "--image-path option."),
-    'pickle': ConfigOption('e', False, False, True, "Serialize a list of the rendered tweet statuses as a standard Python pickle byte "
-                                                    "stream. The stream will be written to 'twempest.p' in the current working directory."),
+    'pickle': ConfigOption(None, False, False, True, "Serialize a list of the rendered tweet statuses as a standard Python pickle byte "
+                                                     "stream. The stream will be written to 'twempest.p' in the current working "
+                                                     "directory."),
     'render-file': ConfigOption('f', None, False, False, "The file name (template tags allowed) for the rendered tweets. "
                                                          "If omitted, tweets will be rendered to STDOUT."),
     'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
@@ -124,7 +125,13 @@ def decorate_config_options(options):
 
             # Don't specify a default value for the option, as it will be the fallback when choose_option_values() is called. For this
             # reason, append the default to the help text manually if it is to be shown.
-            decorator = click.option("--" + option, "-" + config_option.short, is_flag=config_option.is_flag, help=help_text)
+            args = ["--" + option]
+
+            if config_option.short:
+                args.append("-" + config_option.short)
+
+            kwargs = {'is_flag': config_option.is_flag, 'help': help_text}
+            decorator = click.option(*args, **kwargs)
             decorators = decorator(decorators)
 
         return decorators

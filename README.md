@@ -78,7 +78,7 @@ Options:
                           omitted, media files will not be downloaded.
   -u, --image-url TEXT    The URL path (template tags allowed) to use for all
                           image files downloaded via the --image-path option.
-  -e, --pickle            Serialize a list of the rendered tweet statuses as a
+  --pickle                Serialize a list of the rendered tweet statuses as a
                           standard Python pickle byte stream. The stream will
                           be written to 'twempest.p' in the current working
                           directory.
