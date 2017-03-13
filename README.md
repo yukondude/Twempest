@@ -130,7 +130,7 @@ Contents of `twempest.config.sample`:
 # Do not download image files.
 # image-url=
 
-# Do not serialize the retrieved tweets.
+# Do not serialize the rendered tweets.
 # pickle=false
 
 # Render tweets to STDOUT.
