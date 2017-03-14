@@ -6,6 +6,7 @@
 
 import glob
 import os
+import re
 
 from click import echo
 from click.testing import CliRunner
@@ -276,3 +277,31 @@ def test_render_with_append(mock_echo, tweets):
 
         with open("tweet.txt", "r") as f:
             assert str(tweets[0].id) + str(tweets[1].id) == f.read()
+
+
+# noinspection PyShadowingNames
+def test_render_with_skip(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        options['skip'] = re.compile("806229878861201408")
+        options['render-file'] = "{{ tweet.id }}.txt"
+        options['replies'] = True
+        render(tweets, options, template_text, mock_download, mock_echo.echo)
+        assert len(mock_echo.messages) == 1
+        assert "Warning: Skipping tweet ID 806229878861201408 ('" in mock_echo.messages[0]
+        text_file_names = glob.glob("*.txt")
+        assert len(tweets) - 1 == len(text_file_names)
+
+
+# noinspection PyShadowingNames
+def test_render_skip_all(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        options['replies'] = True
+        options['skip'] = re.compile(".")
+        last_id = render(tweets, options, template_text, mock_download, mock_echo.echo)
+        assert last_id is None
+        assert len(mock_echo.messages) == len(tweets) + 1
+        assert "Warning: No tweets were retrieved." == mock_echo.messages[-1]
