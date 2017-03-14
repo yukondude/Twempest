@@ -4,6 +4,7 @@
 # This file is part of Twempest. Copyright 2017 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public License, version 3.
 # Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
+import glob
 import os
 
 from click import echo
@@ -18,6 +19,7 @@ from .fixtures import MockEcho, tweets_fixture
 
 
 IMAGE_TWEET_IDS = (806229878861201408, 810533832529219584, 812831603051220992, 814688934835826688)
+REPLY_TWEET_IDS = (805892124004618240, 812686867522953216)
 TEST_IMAGE_URL = "http://placehold.it/10x10.jpg"
 TEST_IMAGE_SIZE = 3881
 
@@ -197,7 +199,7 @@ def test_download_images_media_update(mock_echo, tweets):
 
 
 # noinspection PyShadowingNames
-def test_render(mock_echo, tweets):
+def test_render_to_console(mock_echo, tweets):
     with CliRunner().isolated_filesystem():
         template_text = "{{ tweet.id }}"
         options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
@@ -209,3 +211,68 @@ def test_render(mock_echo, tweets):
 
         for tweet in tweets:
             assert str(tweet.id) in rendered_ids
+
+
+# noinspection PyShadowingNames
+def test_render_to_files(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        options['render-file'] = "{{ tweet.id }}.txt"
+        options['replies'] = True
+        last_id = render(tweets, options, template_text, mock_download, mock_echo.echo)
+        assert len(mock_echo.messages) == 0
+        text_file_names = glob.glob("*.txt")
+        assert len(tweets) == len(text_file_names)
+        assert "{}.txt".format(last_id) == text_file_names[-1]
+
+        for tweet in tweets:
+            file_name = "{}.txt".format(tweet.id)
+            assert os.path.exists(file_name)
+            with open(file_name, "r") as f:
+                assert str(tweet.id) == f.read()
+
+
+# noinspection PyShadowingNames
+def test_render_no_replies(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        last_id = render(tweets, options, template_text, mock_download, mock_echo.echo)
+        rendered_ids = [i for i in mock_echo.messages if i]
+        assert len(rendered_ids) == len(tweets) - len(REPLY_TWEET_IDS)
+        assert str(last_id) == rendered_ids[-1]
+
+        for rid in REPLY_TWEET_IDS:
+            assert str(rid) not in rendered_ids
+
+
+# noinspection PyShadowingNames
+def test_render_no_append(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        options['count'] = 2
+        options['render-file'] = "tweet.txt"
+        render(tweets, options, template_text, mock_download, mock_echo.echo)
+        assert len(mock_echo.messages) == 1
+        assert "Warning: Skipping existing file '" in mock_echo.messages[0]
+        assert "/tweet.txt'. Use --append" in mock_echo.messages[0]
+
+        with open("tweet.txt", "r") as f:
+            assert str(tweets[0].id) == f.read()
+
+
+# noinspection PyShadowingNames
+def test_render_with_append(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        options['append'] = True
+        options['count'] = 2
+        options['render-file'] = "tweet.txt"
+        render(tweets, options, template_text, mock_download, mock_echo.echo)
+        assert len(mock_echo.messages) == 0
+
+        with open("tweet.txt", "r") as f:
+            assert str(tweets[0].id) + str(tweets[1].id) == f.read()
