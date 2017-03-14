@@ -6,6 +6,7 @@
 
 import glob
 import os
+import pickle
 import re
 
 from click import echo
@@ -14,7 +15,7 @@ import jinja2
 # noinspection PyPackageRequirements
 import pytest
 
-from twempest.twempest import cleanup_downloaded_images, download_from_url, download_images, render, TwempestError
+from twempest.twempest import PICKLE_FILE_NAME, cleanup_downloaded_images, download_from_url, download_images, render, TwempestError
 from twempest.__main__ import CONFIG_OPTIONS
 from .fixtures import MockEcho, tweets_fixture
 
@@ -305,3 +306,21 @@ def test_render_skip_all(mock_echo, tweets):
         assert last_id is None
         assert len(mock_echo.messages) == len(tweets) + 1
         assert "Warning: No tweets were retrieved." == mock_echo.messages[-1]
+
+
+# noinspection PyShadowingNames
+def test_render_pickle(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        options['count'] = 5
+        options['pickle'] = True
+        options['replies'] = True
+        render(tweets, options, template_text, mock_download, mock_echo.echo)
+
+        assert os.path.exists(PICKLE_FILE_NAME)
+        pickled_tweets = pickle.load(open(PICKLE_FILE_NAME, "rb"))
+        assert len(pickled_tweets) == 5
+
+        for i, pickled_tweet in enumerate(pickled_tweets):
+            assert pickled_tweet.id == tweets[i].id
