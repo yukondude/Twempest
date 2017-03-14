@@ -40,6 +40,22 @@ On macOS, Homebrew will take care of installing any dependencies, including Pyth
 On *NIX, you will first need to install Python 3.6 (or higher) using your preferred method.
 
     pip3 install twempest
+    
+### Unicode Locale Configuration
+
+If the Unicode locale is not configured in a particular environment (e.g., `cron`), you will see the following error:
+
+    RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment.
+    Consult http://click.pocoo.org/python3/for mitigation steps.
+    
+[To solve this](http://click.pocoo.org/5/python3/#python3-surrogates), you must explicitly export the Unicode locale in the environment.
+For example, insert something like the following near the top of your `crontab` file:
+ 
+    LC_ALL=en_CA.UTF-8
+    LANG=en_CA.UTF-8
+
+Use the locale appropriate for your language and region.
+The error message should show the list of available locales.
 
 ## Development Setup
 
