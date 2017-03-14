@@ -91,11 +91,17 @@ def render(tweets, options, template_text, download_func, echo):
         console using the passed echo() function, and raise all errors as TwempestError.
     """
     def write_to_console(text):
+        """ Write the given text to the console with a following blank line.
+        """
         echo(text)
         echo()
 
     def write_to_file(path):
+        """ Return a function that will write text to a file at the given path.
+        """
         def write_to_file_inner(text):
+            """ Write the given text to the outer function's file path.
+            """
             try:
                 with open(path, 'a') as f:
                     f.write(text)
@@ -103,6 +109,12 @@ def render(tweets, options, template_text, download_func, echo):
                 raise TwempestError("Unable to write rendered tweet: {}".format(oe))
 
         return write_to_file_inner
+
+    def write_to_void(text):
+        """ Don't do anything with the given text.
+        """
+        _ = text
+        pass
 
     env = jinja2.Environment()
     env.filters.update(ALL_FILTERS)
@@ -141,9 +153,9 @@ def render(tweets, options, template_text, download_func, echo):
             if not options['append'] and os.path.exists(render_file_path):
                 echo("Warning: Skipping existing file '{}'. Use --append to append rendered tweets instead.".format(render_file_path),
                      err=True)
-                continue
-
-            write_func = write_to_file(render_file_path)
+                write_func = write_to_void
+            else:
+                write_func = write_to_file(render_file_path)
         else:
             downloaded_image_file_paths = []
             write_func = write_to_console
