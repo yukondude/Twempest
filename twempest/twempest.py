@@ -110,10 +110,10 @@ def render(tweets, options, template_text, download_func, echo):
 
         return write_to_file_inner
 
+    # noinspection PyUnusedLocal
     def write_to_void(text):
         """ Don't do anything with the given text.
         """
-        _ = text
         pass
 
     env = jinja2.Environment()
