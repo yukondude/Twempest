@@ -181,7 +181,7 @@ author: '{{ tweet.user.name|escape }}'
 date: '{{ tweet.created_at }}'
 tweet_id: {{ tweet.id }}
 ---
-{{ tweet.text|relink("[{{text}}]({{url}})")|reimage("![{{alt}}]({{url}})", "\n\n") }}
+{{ tweet.text | relink("[{{ text }}]({{ url }})") | reimage("![{{ alt }}]({{ url }})", "\n\n") }}
 
 [tweet](https://twitter.com/{{tweet.user.screen_name}}/status/{{ tweet.id }})
 ```
@@ -231,4 +231,4 @@ Replace non-image URLs, hashtag, and user mention links, using the template tag_
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated March 13, 2017*
+*README.md generated March 14, 2017*
