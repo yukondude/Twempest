@@ -58,7 +58,8 @@ If the Unicode locale is not configured in a particular environment
 
 ::
 
-    RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment.
+    RuntimeError: Click will abort further execution because Python 3
+    was configured to use ASCII as encoding for the environment.
     Consult http://click.pocoo.org/python3/for mitigation steps.
 
 `To solve

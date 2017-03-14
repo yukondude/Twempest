@@ -45,7 +45,8 @@ On *NIX, you will first need to install Python 3.6 (or higher) using your prefer
 
 If the Unicode locale is not configured in a particular environment (e.g., `cron`), you will see the following error:
 
-    RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment.
+    RuntimeError: Click will abort further execution because Python 3
+    was configured to use ASCII as encoding for the environment.
     Consult http://click.pocoo.org/python3/for mitigation steps.
     
 [To solve this](http://click.pocoo.org/5/python3/#python3-surrogates), you must explicitly export the Unicode locale in the environment.
