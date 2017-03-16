@@ -38,6 +38,7 @@ CONFIG_OPTIONS = {
     'pickle': ConfigOption(None, False, False, True, "Serialize a list of the rendered tweet statuses as a standard Python pickle byte "
                                                      "stream. The stream will be written to 'twempest.p' in the current working "
                                                      "directory."),
+    'quiet': ConfigOption('q', False, False, True, "Suppress warning messages."),
     'render-file': ConfigOption('f', None, False, False, "The file name (template tags allowed) for the rendered tweets. "
                                                          "If omitted, tweets will be rendered to STDOUT."),
     'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
@@ -139,6 +140,19 @@ def decorate_config_options(options):
     return option_decorators
 
 
+def echo_wrapper(echo_func, is_quiet):
+    """ Return a function based upon the given echo_func() function that adds a 'warning' parameter. If is_quiet is True, calls to this
+        wrapped echo() with warning == True will not be echo-ed. Echo!
+    """
+    def wrapped_echo(message=None, file=None, nl=True, err=False, color=None, warning=False):
+        """ Echo the message unless warning and is_quiet are both True.
+        """
+        if not warning or not is_quiet:
+            echo_func(message=message, file=file, nl=nl, err=err, color=color)
+
+    return wrapped_echo
+
+
 def last_tweet_id_file_name(user_id):
     """ Return the last tweet ID file name corresponding to the given user.
     """
@@ -238,7 +252,8 @@ def twempest(**kwargs):
         click.echo(template_text)
     else:
         try:
-            last_tweet_id = retrieve(auth_keys=auth_keys, options=options, template_text=template_text, echo=click.echo)
+            last_tweet_id = retrieve(auth_keys=auth_keys, options=options, template_text=template_text,
+                                     echo=echo_wrapper(click.echo, options['quiet']))
         except TwempestError as e:
             raise click.ClickException(e)
 

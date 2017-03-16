@@ -39,7 +39,7 @@ def cleanup_downloaded_images(downloaded_image_file_paths, echo):
         try:
             os.unlink(path)
         except OSError as e:
-            echo("Warning: Unable to delete downloaded image file: {}".format(e), err=True)
+            echo("Warning: Unable to delete downloaded image file: {}".format(e), warning=True)
 
 
 def download_from_url(url, file_path):
@@ -77,7 +77,7 @@ def download_images(tweet, image_dir_path_template, image_url_path_template, ren
         media['media_url'] = image_url_path if not is_https else None
 
         if os.path.exists(image_file_path):
-            echo("Warning: Skipping existing image file '{}'.".format(image_file_path), err=True)
+            echo("Warning: Skipping existing image file '{}'.".format(image_file_path), warning=True)
             continue
 
         download_func(image_download_url, image_file_path)
@@ -152,7 +152,7 @@ def render(tweets, options, template_text, download_func, echo):
 
             if not options['append'] and os.path.exists(render_file_path):
                 echo("Warning: Skipping existing file '{}'. Use --append to append rendered tweets instead.".format(render_file_path),
-                     err=True)
+                     warning=True)
                 write_func = write_to_void
             else:
                 write_func = write_to_file(render_file_path)
@@ -164,7 +164,7 @@ def render(tweets, options, template_text, download_func, echo):
 
         if options['skip'] and options['skip'].search(rendered_tweet) is not None:
             echo("Warning: Skipping tweet ID {} ('{}{}') because its rendered form matches the --skip pattern."
-                 .format(tweet.id, tweet.text[:30], "..." if len(tweet.text) > 30 else ""), err=True)
+                 .format(tweet.id, tweet.text[:30], "..." if len(tweet.text) > 30 else ""), warning=True)
             cleanup_downloaded_images(downloaded_image_file_paths, echo)
             continue
 
@@ -180,14 +180,14 @@ def render(tweets, options, template_text, download_func, echo):
             break
 
     if not last_tweet_id:
-        echo("Warning: No tweets were retrieved.", err=True)
+        echo("Warning: No tweets were retrieved.", warning=True)
     elif options['pickle']:
         try:
             with open(PICKLE_FILE_NAME, "wb") as pf:
                 pickle.dump(pickle_tweets, pf)
         except OSError as e:
             echo("Warning: Unable to serialize the rendered tweets to '{}' in the current working directory: {}".format(PICKLE_FILE_NAME,
-                                                                                                                        e))
+                                                                                                                        e), warning=True)
 
     return last_tweet_id
 

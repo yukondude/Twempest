@@ -126,6 +126,7 @@ Run ``twempest --help`` to view the usage instructions:
                               standard Python pickle byte stream. The stream will
                               be written to 'twempest.p' in the current working
                               directory.
+      -q, --quiet             Suppress warning messages.
       -f, --render-file TEXT  The file name (template tags allowed) for the
                               rendered tweets. If omitted, tweets will be rendered
                               to STDOUT.
@@ -308,7 +309,7 @@ template tag\_format with variables ``text`` and ``url`` to format each.
 Transform the given text into a suitable file name that is also scrubbed
 of URLs and hashtags.
 
-*README.md generated March 14, 2017*
+*README.md generated March 16, 2017*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/

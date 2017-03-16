@@ -16,8 +16,8 @@ import jinja2
 import pytest
 
 from twempest.twempest import PICKLE_FILE_NAME, cleanup_downloaded_images, download_from_url, download_images, render, TwempestError
-from twempest.__main__ import CONFIG_OPTIONS
-from .fixtures import MockEcho, tweets_fixture
+from twempest.__main__ import CONFIG_OPTIONS, echo_wrapper
+from .fixtures import tweets_fixture
 
 
 IMAGE_TWEET_IDS = (806229878861201408, 810533832529219584, 812831603051220992, 814688934835826688)
@@ -35,9 +35,29 @@ def mock_download(url, file_path):
         f.write(b'0')
 
 
+class MockEcho:
+    """ Mock class for testing output of echo() calls.
+    """
+    messages = []
+    echo = None
+
+    @staticmethod
+    def _echo(**kwargs):
+        MockEcho.messages.append(kwargs['message'])
+
+    def __init__(self, quiet=False):
+        del MockEcho.messages[:]
+        self.echo = echo_wrapper(MockEcho._echo, quiet)
+
+
 @pytest.fixture
 def mock_echo():
     return MockEcho()
+
+
+@pytest.fixture
+def mock_echo_quiet():
+    return MockEcho(quiet=True)
 
 
 @pytest.fixture
@@ -58,7 +78,6 @@ def test_cleanup_downloaded_images(mock_echo):
                 f.write("foo")
 
         cleanup_downloaded_images(image_file_paths, echo)
-        assert len(mock_echo.errs) == len(mock_echo.messages) == 0
 
         for path in image_file_paths:
             assert not os.path.exists(path)
@@ -69,8 +88,7 @@ def test_cleanup_downloaded_images_fail_cant_delete(mock_echo):
     with CliRunner().isolated_filesystem():
         image_file_path = os.path.join(".", "quux.jpg")
         cleanup_downloaded_images([image_file_path], mock_echo.echo)
-        assert len(mock_echo.errs) == len(mock_echo.messages) == 1
-        assert mock_echo.errs[0]
+        assert len(mock_echo.messages) == 1
         assert mock_echo.messages[0].startswith("Warning: Unable to delete downloaded image file:")
         assert image_file_path in mock_echo.messages[0]
 
@@ -260,6 +278,20 @@ def test_render_no_append(mock_echo, tweets):
         assert len(mock_echo.messages) == 1
         assert "Warning: Skipping existing file '" in mock_echo.messages[0]
         assert "/tweet.txt'. Use --append" in mock_echo.messages[0]
+
+        with open("tweet.txt", "r") as f:
+            assert str(tweets[0].id) == f.read()
+
+
+# noinspection PyShadowingNames
+def test_render_no_append_quiet(mock_echo_quiet, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ tweet.id }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+        options['count'] = 2
+        options['render-file'] = "tweet.txt"
+        render(tweets, options, template_text, mock_download, mock_echo_quiet.echo)
+        assert len(mock_echo_quiet.messages) == 0
 
         with open("tweet.txt", "r") as f:
             assert str(tweets[0].id) == f.read()

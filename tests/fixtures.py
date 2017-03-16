@@ -8,22 +8,6 @@ import os
 import pickle
 
 
-class MockEcho:
-    """ Mock class for testing output of echo() calls.
-    """
-    messages = []
-    errs = []
-
-    def __init__(self):
-        del MockEcho.messages[:]
-        del MockEcho.errs[:]
-
-    @staticmethod
-    def echo(message="", err=False):
-        MockEcho.messages.append(message)
-        MockEcho.errs.append(err)
-
-
 def tweets_fixture():
     """ Just a whole mess--well, eighteen--of pickled sample tweets from late 2016 to test with.
     """

@@ -99,6 +99,7 @@ Options:
                           standard Python pickle byte stream. The stream will
                           be written to 'twempest.p' in the current working
                           directory.
+  -q, --quiet             Suppress warning messages.
   -f, --render-file TEXT  The file name (template tags allowed) for the
                           rendered tweets. If omitted, tweets will be rendered
                           to STDOUT.
@@ -250,4 +251,4 @@ Replace non-image URLs, hashtag, and user mention links, using the template tag_
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated March 14, 2017*
+*README.md generated March 16, 2017*
