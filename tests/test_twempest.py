@@ -356,3 +356,18 @@ def test_render_pickle(mock_echo, tweets):
 
         for i, pickled_tweet in enumerate(pickled_tweets):
             assert pickled_tweet.id == tweets[i].id
+
+
+# noinspection PyShadowingNames
+def test_render_html_entity_in_text(mock_echo, tweets):
+    """ Test bug fix when tweet has HTML entities in the source text.
+    """
+    tweets[0].text = "That isn&#39;t Harry's sandwich &amp; apple."
+    template_text = "{{ tweet.text|delink|qescape }}"
+    options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+    options['count'] = 1
+    options['replies'] = True
+    render(tweets, options, template_text, mock_download, mock_echo.echo)
+    rendered = [m for m in mock_echo.messages if m]
+    assert len(rendered) == 1
+    assert rendered[0] == "That isn&#39;t Harry&#39;s sandwich &amp; apple."

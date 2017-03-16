@@ -11,7 +11,7 @@ import re
 # noinspection PyPackageRequirements
 import pytest
 
-from twempest.filters import delink, isodate, reimage, relink, slugify
+from twempest.filters import delink, qescape, isodate, reimage, relink, slugify
 from .fixtures import tweets_fixture
 
 
@@ -50,6 +50,17 @@ def test_delink(tweets):
 ])
 def test_isodate(date, expected):
     assert isodate(date) == expected
+
+
+@pytest.mark.parametrize('text,expected', [
+    ("", ""),
+    ("'", "&#39;"),
+    ("&#39;", "&#39;"),
+    ("<", "<"),
+    ("&", "&"),
+])
+def test_qescape(text, expected):
+    assert qescape(text) == expected
 
 
 # noinspection PyShadowingNames

@@ -92,12 +92,12 @@ The rendered output of this template might look something like the following:
 
 ```
 ---
-title: 'Ice fog &#34;boiling&#34; up from the Yukon River.'
+title: 'Ice fog &#39;boiling&#39; up from the Yukon River.'
 author: 'Dave Rogers'
 date: '2016-12-06 12:12:36-08:00'
 tweet_id: 806229878861201408
 ---
-Ice fog "boiling" up from the [#Yukon](https://twitter.com/hashtag/yukon) River.
+Ice fog 'boiling' up from the [#Yukon](https://twitter.com/hashtag/yukon) River.
 
 ![2016-12-06-ice-fog-boiling-up-from-the-yukon-river-0](/media/2016-12-06-ice-fog-boiling-up-from-the-yukon-river-0.jpg)
 
@@ -124,6 +124,9 @@ Remove URLs and hashtag '#' prefixes.
 
 ### `isodate`
 Format a date as YYYY-MM-DD.
+
+### `qescape`
+Escape just single quote characters as HTML entities.
 
 ### `reimage(tag_format, delimiter=" ")`
 Remove image URLs and append them to the end (following the delimiter), using the template tag_format with variables `alt` and `url` to

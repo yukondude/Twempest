@@ -37,6 +37,12 @@ def isodate(date):
     return date.strftime('%Y-%m-%d')
 
 
+def qescape(text):
+    """ Return the given text with just single quotes escaped as HTML entities.
+    """
+    return text.replace("&#39;", "'").replace("'", "&#39;")
+
+
 @jinja2.contextfilter
 def reimage(ctx, text, tag_format, delimiter=" "):
     """ Remove image URLs and append them to the end of the given text, following the template tag_format with variables 'alt' and 'url',

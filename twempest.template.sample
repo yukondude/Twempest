@@ -1,6 +1,6 @@
 ---
-title: '{{ tweet.text|delink|truncate(80,False)|escape }}'
-author: '{{ tweet.user.name|escape }}'
+title: '{{ tweet.text|delink|truncate(80,False)|qescape }}'
+author: '{{ tweet.user.name|qescape }}'
 date: '{{ tweet.created_at }}'
 tweet_id: {{ tweet.id }}
 ---
