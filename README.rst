@@ -180,6 +180,9 @@ Contents of ``twempest.config.sample``:
     # Do not serialize the rendered tweets.
     # pickle=false
 
+    # Do not suppress warning messages.
+    # quiet=false
+
     # Render tweets to STDOUT.
     # render-file=
     # Because template expressions are allowed for this option, you can generate
