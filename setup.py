@@ -6,6 +6,12 @@
 # Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
 import os
+
+# noinspection PyPackageRequirements
+from pipenv.project import Project
+# noinspection PyPackageRequirements
+from pipenv.utils import convert_deps_to_pip
+
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import sys
@@ -94,7 +100,9 @@ setup(
     name="twempest",
     packages=find_packages(),
     platforms=["MacOS", "Linux"],
+    requirements=convert_deps_to_pip(Project(chdir=False).parsed_pipfile['packages'], r=False),
+    test_requirements=convert_deps_to_pip(Project(chdir=False).parsed_pipfile['dev-packages'], r=False),
     url="https://github.com/yukondude/Twempest",
     version=twempest.__version__,
-    zip_safe=False
+    zip_safe=False,
 )
