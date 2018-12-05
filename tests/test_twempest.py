@@ -9,7 +9,6 @@ import os
 import pickle
 import re
 
-from click import echo
 from click.testing import CliRunner
 import jinja2
 # noinspection PyPackageRequirements
@@ -39,7 +38,6 @@ class MockEcho:
     """ Mock class for testing output of echo() calls.
     """
     messages = []
-    echo = None
 
     @staticmethod
     def _echo(**kwargs):
@@ -77,7 +75,7 @@ def test_cleanup_downloaded_images(mock_echo):
             with open(image_file_path, 'w') as f:
                 f.write("foo")
 
-        cleanup_downloaded_images(image_file_paths, echo)
+        cleanup_downloaded_images(image_file_paths, mock_echo.echo)
 
         for path in image_file_paths:
             assert not os.path.exists(path)
@@ -242,7 +240,7 @@ def test_render_to_files(mock_echo, tweets):
         options['replies'] = True
         last_id = render(tweets, options, template_text, mock_download, mock_echo.echo)
         assert len(mock_echo.messages) == 0
-        text_file_names = glob.glob("*.txt")
+        text_file_names = sorted(glob.glob("*.txt"))
         assert len(tweets) == len(text_file_names)
         assert "{}.txt".format(last_id) == text_file_names[-1]
 
