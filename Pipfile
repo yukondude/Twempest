@@ -1,0 +1,23 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+twine = ">=1.12.1"
+docutils = ">=0.14"
+homebrew-pypi-poet = ">=0.10.0"
+coverage = ">=4.5.2"
+flake8 = ">=3.6.0"
+pytest = ">=4.0.1"
+pytest-cov = ">=2.6.0"
+pytest-flake8 = ">=1.0.2"
+
+[packages]
+click = ">=7.0"
+pytz = ">=2018.7"
+tweepy = ">=3.7.0"
+tzlocal = ">=1.5.1"
+Jinja2 = ">=2.10"
+
+[requires]

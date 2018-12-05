@@ -9,7 +9,7 @@ README.rst: README.md
 	rm -f README.tmp
 
 README.md: README-template.md twempest.config.sample twempest.template.sample twempest/__init__.py
-	./build-readme.py
+	pipenv run ./build-readme.py
 
 clean:
 	rm -fr dist/
@@ -17,22 +17,22 @@ clean:
 	rm -fr output/
 
 docs: README.rst
-	./build-readme.py
+	pipenv run ./build-readme.py
 	@$(MAKE)
 
 build: clean docs
-	./setup.py sdist >/dev/null
-	./setup.py bdist_wheel >/dev/null
+	pipenv run ./setup.py sdist >/dev/null
+	pipenv run ./setup.py bdist_wheel >/dev/null
 
 deploy:
-	./setup.py test
+	pipenv run ./setup.py test
 	@$(MAKE) build
 	ls dist/*.whl | xargs -I{} twine register {}
 	ls dist/*.whl | xargs -I{} twine upload {}
 	ls dist/*.tar.gz | xargs -I{} twine upload {}
 
 bump:
-	./bump-version.py
+	pipenv run ./bump-version.py
 	@$(MAKE) deploy
 	@echo "Commit the changes: git add . ; git commit -m<comment>"
 	@echo "Tag the version: git tag -a <bumpedversion> -m<comment>"

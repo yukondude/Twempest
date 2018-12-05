@@ -257,4 +257,5 @@ Replace non-image URLs, hashtag, and user mention links, using the template tag_
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
-*README.md generated March 16, 2017*
+&nbsp; 
+*README.md generated December 5, 2018*

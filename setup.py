@@ -2,7 +2,7 @@
 """ Twempest setuptools configuration.
 """
 
-# This file is part of Twempest. Copyright 2017 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public License, version 3.
+# This file is part of Twempest. Copyright 2018 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public License, version 3.
 # Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
 import os
@@ -13,8 +13,8 @@ import sys
 import twempest
 
 
-if sys.version_info < (3, 3):
-    sys.stderr.write("Twempest requires Python 3.3 or higher.\n")
+if sys.version_info < (3, 4):
+    sys.stderr.write("Twempest requires Python 3.4 or higher.\n")
     sys.exit(1)
 
 
@@ -71,6 +71,7 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Topic :: Text Processing",
         "Topic :: Utilities",
     ],
@@ -84,17 +85,12 @@ setup(
             "twempest=twempest.__main__:twempest",
         ]
     },
-    extras_require={
-        'testing': gather_requirements("requirements-test.txt"),
-    },
     include_package_data=True,
-    install_requires=gather_requirements("requirements.txt"),
     license="GPLv3",
     long_description=long_description,
     name="twempest",
     packages=find_packages(),
     platforms=["MacOS", "Linux"],
-    tests_require=gather_requirements("requirements-test.txt"),
     url="https://github.com/yukondude/Twempest",
     version=twempest.__version__,
     zip_safe=False
