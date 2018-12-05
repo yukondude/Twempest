@@ -23,9 +23,9 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source venv/bin/activate ; fi
 
 install:
-- travis_retry pip install pipenv --dev
-- travis_retry pipenv sync
-- travis_retry python setup.py install
+- travis_retry pip install pipenv
+- travis_retry pipenv sync --dev
+- travis_retry python ./setup.py install
 
 script:
   py.test --cov=twempest --cov=tests --cov-report=term-missing --cov-fail-under=80 --flake8 twempest tests
