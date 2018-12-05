@@ -24,11 +24,11 @@ before_install:
 
 install:
 - travis_retry pip install pipenv
-- travis_retry pipenv sync --dev
+- travis_retry pipenv install --dev
 - travis_retry python ./setup.py install
 
 script:
-  py.test --cov=twempest --cov=tests --cov-report=term-missing --cov-fail-under=80 --flake8 twempest tests
+  pipenv run py.test --cov=twempest --cov=tests --cov-report=term-missing --cov-fail-under=80 --flake8 -W ignore::DeprecationWarning twempest tests
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
