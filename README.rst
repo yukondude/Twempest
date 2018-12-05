@@ -317,7 +317,7 @@ template tag_format with variables ``text`` and ``url`` to format each.
 Transform the given text into a suitable file name that is also scrubbed
 of URLs and hashtags.
 
-  *README.md generated December 5, 2018*
+*README.md generated December 5, 2018*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
