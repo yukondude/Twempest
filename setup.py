@@ -31,9 +31,13 @@ def gather_requirements(requirements_file_name):
     return [pkg.strip() for pkg in open(os.path.join(HERE, requirements_file_name), "r").readlines()]
 
 
+PYTEST_ARGS = ["--cov=twempest", "--cov=tests", "--cov-report=term-missing", "--cov-fail-under=80", "--flake8",
+               "-W ignore::DeprecationWarning"]
+
+
 # noinspection PyAttributeOutsideInit
 class PyTest(TestCommand):
-    test_args = ["--cov=twempest", "--cov=tests", "--cov-report=term-missing", "--cov-fail-under=80", "--flake8"]
+    test_args = PYTEST_ARGS
     test_suite = True
 
     def finalize_options(self):
@@ -49,8 +53,7 @@ class PyTest(TestCommand):
 class PyCleanTest(PyTest):
     """ Same as PyTest, but clear the cache first.
     """
-    test_args = ["--verbose", "--cache-clear", "--cov=twempest", "--cov=tests", "--cov-report=term-missing",
-                 "--cov-fail-under=80", "--flake8"]
+    test_args = ["--verbose", "--cache-clear"] + PYTEST_ARGS
 
 
 setup(

@@ -23,7 +23,7 @@ from .fixtures import tweets_fixture
 IMAGE_TWEET_IDS = (806229878861201408, 810533832529219584, 812831603051220992, 814688934835826688)
 REPLY_TWEET_IDS = (805892124004618240, 812686867522953216)
 TEST_IMAGE_URL = "http://placehold.it/10x10.jpg"
-TEST_IMAGE_SIZE = 3881
+TEST_IMAGE_SIZE = 721
 
 
 def mock_download(url, file_path):
@@ -109,7 +109,7 @@ def test_download_from_url_fail_url():
         os.mkdir("download")
 
         with pytest.raises(TwempestError) as excinfo:
-            download_from_url("http://test.com/doesntexist", path)
+            download_from_url("https://yukondude.com/doesntexist", path)
 
         assert "Unable to download image file:" in str(excinfo.value)
         assert not os.path.exists(path)
