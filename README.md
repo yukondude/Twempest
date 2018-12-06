@@ -10,12 +10,13 @@ Twitter to text via template. Somehow that abbreviates to "twempest".
 
 ## Motivation
 
-Twempest was born of the need to periodically echo my Twitter tweets as posts on my Jekyll-built blog.
+Twempest was born of the need to periodically echo my Twitter tweets as posts on first a Jekyll-based and then
+Pelican-built blog.
 That's it, that's all.
 
 ## Licence
 
-Copyright 2017 Dave Rogers.
+Copyright 2018 Dave Rogers.
 Licensed under the [GNU General Public License, version 3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
@@ -49,7 +50,8 @@ If the Unicode locale is not configured in a particular environment (e.g., `cron
     was configured to use ASCII as encoding for the environment.
     Consult http://click.pocoo.org/python3/for mitigation steps.
     
-[To solve this](http://click.pocoo.org/5/python3/#python3-surrogates), you must explicitly export the Unicode locale in the environment.
+[To solve this](http://click.pocoo.org/5/python3/#python3-surrogates), you must explicitly export the Unicode locale in
+the environment.
 For example, insert something like the following near the top of your `crontab` file:
  
     LC_ALL=en_CA.UTF-8
@@ -60,12 +62,16 @@ The error message should show the list of available locales.
 
 ## Development Setup
 
- 1. Create a Python 3 virtualenv for Twempest: `mkvirtualenv --python=$(which python3) Twempest`
- 1. Clone the Twempest repo: `git clone https://github.com/yukondude/Twempest.git`
- 1. Install dependencies: `pip install -r requirements.txt -r requirements-dev.txt -r requirements-test.txt`
- 1. Install the project in development mode: `./setup.py develop`
- 1. Run the unit tests to make sure everything is copacetic: `./setup.py test`
+ 1. Make sure that Python 3.6 or better is installed.
+ 1. Install pipenv: `pip install pipenv`
+ 1. Clone the Twempest repo: `git clone https://github.com/yukondude/Twempest.git ; cd Twempest`
+ 1. Install dependencies: `pipenv install --dev --three`
+ 1. Install the project in development mode: `pipenv run ./setup.py develop`
+ 1. Run the unit tests to make sure everything is copacetic: `pipenv run ./setup.py test`
  1. Pour a snifter of Château de Montifaud and light up a Laranja Reserva Toro.
+
+While developing, you will always have to run the Twempest CLI from within the pipenv virtual environment:
+`pipenv run twempest`
 
 ## Usage
 Run `twempest --help` to view the usage instructions:
@@ -224,16 +230,18 @@ Ice fog 'boiling' up from the [#Yukon](https://twitter.com/hashtag/yukon) River.
 ```
 
 ## `tweet` Context Variable
-See the [Twitter API documentation for tweets](https://dev.twitter.com/overview/api/tweets) for a list of all of the keys that can be found
-under the `tweet` context variable (a dictionary).
+See the [Twitter API documentation for tweets](https://dev.twitter.com/overview/api/tweets) for a list of all of the
+keys that can be found under the `tweet` context variable (a dictionary).
 
 A couple of other keys are also available:
 
 ### `tweet.media[].original_media_url`
-The original value of the `media_url` key within the list of `media` items before any downloaded image URL rewriting took place.
-
+The original value of the `media_url` key within the list of `media` items before any downloaded image URL rewriting
+took place.
+ 
 ### `tweet.media[].original_media_url_https`
-The original value of the `media_url_https` key within the list of `media` items before any downloaded image URL rewriting took place.
+The original value of the `media_url_https` key within the list of `media` items before any downloaded image URL
+rewriting took place.
 
 ## Template Filters
 These are in addition to the [built-in Jinja2 filters](http://jinja.pocoo.org/docs/2.9/templates/#list-of-builtin-filters).
@@ -248,14 +256,15 @@ Format a date as YYYY-MM-DD.
 Escape just single quote characters as HTML entities.
 
 ### `reimage(tag_format, delimiter=" ")`
-Remove image URLs and append them to the end (following the delimiter), using the template tag_format with variables `alt` and `url` to
-format each.
+Remove image URLs and append them to the end (following the delimiter), using the template tag_format with variables
+`alt` and `url` to format each.
 
 ### `relink(tag_format)`
-Replace non-image URLs, hashtag, and user mention links, using the template tag_format with variables `text` and `url` to format each.
+Replace non-image URLs, hashtag, and user mention links, using the template tag_format with variables `text` and `url`
+to format each.
 
 ### `slugify`
 Transform the given text into a suitable file name that is also scrubbed of URLs and hashtags.
 
 
-*README.md generated December 5, 2018*
+*README.md generated December 6, 2018*

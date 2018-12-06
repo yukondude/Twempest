@@ -7,12 +7,13 @@ Motivation
 ----------
 
 Twempest was born of the need to periodically echo my Twitter tweets as
-posts on my Jekyll-built blog. That’s it, that’s all.
+posts on first a Jekyll-based and then Pelican-built blog. That’s it,
+that’s all.
 
 Licence
 -------
 
-Copyright 2017 Dave Rogers. Licensed under the `GNU General Public
+Copyright 2018 Dave Rogers. Licensed under the `GNU General Public
 License, version 3 <https://www.gnu.org/licenses/gpl-3.0.en.html>`__.
 Refer to the attached LICENSE file or see http://www.gnu.org/licenses/
 for details.
@@ -79,17 +80,20 @@ message should show the list of available locales.
 Development Setup
 -----------------
 
-1. Create a Python 3 virtualenv for Twempest:
-   ``mkvirtualenv --python=$(which python3) Twempest``
-2. Clone the Twempest repo:
-   ``git clone https://github.com/yukondude/Twempest.git``
-3. Install dependencies:
-   ``pip install -r requirements.txt -r requirements-dev.txt -r requirements-test.txt``
-4. Install the project in development mode: ``./setup.py develop``
-5. Run the unit tests to make sure everything is copacetic:
-   ``./setup.py test``
-6. Pour a snifter of Château de Montifaud and light up a Laranja Reserva
+1. Make sure that Python 3.6 or better is installed.
+2. Install pipenv: ``pip install pipenv``
+3. Clone the Twempest repo:
+   ``git clone https://github.com/yukondude/Twempest.git ; cd Twempest``
+4. Install dependencies: ``pipenv install --dev --three``
+5. Install the project in development mode:
+   ``pipenv run ./setup.py develop``
+6. Run the unit tests to make sure everything is copacetic:
+   ``pipenv run ./setup.py test``
+7. Pour a snifter of Château de Montifaud and light up a Laranja Reserva
    Toro.
+
+While developing, you will always have to run the Twempest CLI from
+within the pipenv virtual environment: ``pipenv run twempest``
 
 Usage
 -----
@@ -317,7 +321,7 @@ template tag_format with variables ``text`` and ``url`` to format each.
 Transform the given text into a suitable file name that is also scrubbed
 of URLs and hashtags.
 
-*README.md generated December 5, 2018*
+*README.md generated December 6, 2018*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
