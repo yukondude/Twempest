@@ -2,8 +2,8 @@
 """ Increment the patch-level project version number in <project>/__init__.py
 """
 
-# This file is part of Twempest. Copyright 2017 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public License, version 3.
-# Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
+# This file is part of Twempest. Copyright 2018 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public
+# License, version 3. Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
 import os
 import re

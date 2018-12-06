@@ -1,8 +1,8 @@
 """ Twempest console script entry point.
 """
 
-# This file is part of Twempest. Copyright 2017 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public License, version 3.
-# Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
+# This file is part of Twempest. Copyright 2018 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public
+# License, version 3. Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
 import collections
 import configparser
@@ -167,7 +167,7 @@ def show_version(ctx, param, value):
         return  # pragma: no cover
     from twempest import __version__
     click.echo("Twempest version {}".format(__version__))
-    click.echo("Copyright 2017 Dave Rogers. Licensed under the GPLv3. See LICENSE.")
+    click.echo("Copyright 2018 Dave Rogers. Licensed under the GPLv3. See LICENSE.")
     ctx.exit()
 
 
