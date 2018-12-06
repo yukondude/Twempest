@@ -11,16 +11,16 @@ import os
 from pipenv.project import Project
 # noinspection PyPackageRequirements
 from pipenv.utils import convert_deps_to_pip
-
 from setuptools import setup, find_packages
+# noinspection PyPep8Naming
 from setuptools.command.test import test as TestCommand
 import sys
 
 import twempest
 
 
-if sys.version_info < (3, 4):
-    sys.stderr.write("Twempest requires Python 3.4 or higher.\n")
+if sys.version_info < (3, 6):
+    sys.stderr.write("Twempest requires Python 3.6 or higher.\n")
     sys.exit(1)
 
 
@@ -77,7 +77,6 @@ setup(
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Topic :: Text Processing",
