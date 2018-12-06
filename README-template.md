@@ -8,6 +8,8 @@ Twitter to text via template. Somehow that abbreviates to "twempest".
 [![pyversions](https://img.shields.io/pypi/pyversions/Twempest.svg)](https://pypi.python.org/pypi/twempest/)
 [![licence](https://img.shields.io/pypi/l/Twempest.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
+Twempest is a command-line program written in Python.
+
 ## Motivation
 
 Twempest was born of the need to periodically echo my Twitter tweets as posts on first a Jekyll-based and then

@@ -3,6 +3,8 @@ Twempest
 
 |status| |buildstatus| |codecov| |pypiversion| |pyversions| |licence|
 
+Twempest is a command-line program written in Python.
+
 Motivation
 ----------
 
