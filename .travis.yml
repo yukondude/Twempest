@@ -8,8 +8,6 @@ matrix:
       python: 3.7
       dist: xenial
       sudo: true
-    - os: osx
-      language: generic
 
 install:
 - travis_retry pip install pipenv
