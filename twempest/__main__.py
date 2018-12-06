@@ -23,8 +23,10 @@ FALLBACK_CONFIG_DIR_PATH = "."
 # Collect all configuration options (that may also appear in the config file) here so that they don't have to be duplicated.
 ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
 CONFIG_OPTIONS = {
-    'append': ConfigOption(short='a', default=False, show_default=False, is_flag=True,
-                           help="Append rendered tweet(s) to existing file(s) rather than skipping past with a warning."),
+    'abbreviated': ConfigOption(short='A', default=False, show_default=False, is_flag=True,
+                                help="Render the abbreviated form of the tweet text rather than the full, extended, version."),
+    'append': ConfigOption('a', False, False, True,
+                           "Append rendered tweet(s) to existing file(s) rather than skipping past with a warning."),
     'count': ConfigOption('n', 200, True, False, "Maximum number of tweets to retrieve. The actual number may be lower."),
     'dry-run': ConfigOption('D', False, False, True, "Display all configuration options and template contents without retrieving tweets."),
     'image-path': ConfigOption('i', None, False, False, "The directory path (template tags allowed) to write downloaded image "

@@ -9,6 +9,9 @@
 # --help, and --version, but go ahead and try them if you like. The commented-
 # out defaults are shown below. See the --help output for details.
 
+# Render the full text of the tweet.
+# abbreviated=false
+
 # Do not append to existing files.
 # append=false
 

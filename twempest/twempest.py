@@ -160,6 +160,9 @@ def render(tweets, options, template_text, download_func, echo):
             downloaded_image_file_paths = []
             write_func = write_to_console
 
+        if not hasattr(tweet, 'text'):
+            tweet.text = tweet.full_text
+
         rendered_tweet = template.render(tweet=tweet)
 
         if options['skip'] and options['skip'].search(rendered_tweet) is not None:
@@ -196,9 +199,11 @@ def retrieve(auth_keys, options, template_text, echo):
     """ Using the given authorization credentials and rendering options, retrieve and render the tweets from the authorized user's timeline.
     """
     api = authenticate_twitter_api(**auth_keys)
+    tweet_mode = 'normal' if options['abbreviated'] else 'extended'
 
     try:
-        tweets = reversed(list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'], include_rts=options['retweets']).items()))
+        tweets = reversed(list(tweepy.Cursor(api.user_timeline, since_id=options['since-id'],
+                                             include_rts=options['retweets'], tweet_mode=tweet_mode).items()))
     except tweepy.TweepError as e:
         raise TwempestError("Unable to retrieve tweets. Twitter API responded with '{}'. "
                             "See https://dev.twitter.com/overview/api/response-codes for an explanation.".format(e.response))
