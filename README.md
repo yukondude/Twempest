@@ -89,6 +89,8 @@ Options:
   -c, --config-path TEXT  Twempest configuration directory path, which must be
                           writable, and must also contain the twempest.conf
                           file.  [default: ~/.twempest]
+  -A, --abbreviated       Render the abbreviated form of the tweet text rather
+                          than the full, extended, version.
   -a, --append            Append rendered tweet(s) to existing file(s) rather
                           than skipping past with a warning.
   -n, --count TEXT        Maximum number of tweets to retrieve. The actual
@@ -140,6 +142,9 @@ Contents of `twempest.config.sample`:
 # leading double-dash). The obvious exceptions would include --config-path,
 # --help, and --version, but go ahead and try them if you like. The commented-
 # out defaults are shown below. See the --help output for details.
+
+# Render the full text of the tweet.
+# abbreviated=false
 
 # Do not append to existing files.
 # append=false
