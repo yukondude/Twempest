@@ -133,6 +133,11 @@ def render(tweets, options, template_text, download_func, echo):
     pickle_tweets = []
 
     for tweet in tweets:
+        # If the tweet mode was extended when it was retrieved, there will only be a full_text attribute so copy its
+        # value to the expected text attribute.
+        if not hasattr(tweet, 'text'):
+            tweet.text = tweet.full_text
+
         # Replace UTC created time with local time.
         if tweet.created_at.tzinfo is None:
             tweet.created_at = gmt_tz.localize(tweet.created_at)
@@ -159,9 +164,6 @@ def render(tweets, options, template_text, download_func, echo):
         else:
             downloaded_image_file_paths = []
             write_func = write_to_console
-
-        if not hasattr(tweet, 'text'):
-            tweet.text = tweet.full_text
 
         rendered_tweet = template.render(tweet=tweet)
 
