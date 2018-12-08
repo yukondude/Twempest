@@ -4,17 +4,18 @@
 # This file is part of Twempest. Copyright 2018 Dave Rogers <info@yukondude.com>. Licensed under the GNU General Public
 # License, version 3. Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for details.
 
+from click.testing import CliRunner
 import glob
+import jinja2
+from jinja2.exceptions import TemplateError
 import os
 import pickle
-import re
-
-from click.testing import CliRunner
-import jinja2
 # noinspection PyPackageRequirements
 import pytest
+import re
 
-from twempest.twempest import PICKLE_FILE_NAME, cleanup_downloaded_images, download_from_url, download_images, render, TwempestError
+from twempest.twempest import PICKLE_FILE_NAME, cleanup_downloaded_images, download_from_url, download_images, render,\
+    TwempestError
 from twempest.__main__ import CONFIG_OPTIONS, echo_wrapper
 from .fixtures import tweets_fixture
 
@@ -69,7 +70,7 @@ def test_cleanup_downloaded_images(mock_echo):
         image_file_paths = []
 
         for i in range(4):
-            image_file_name = "image{}.jpg".format(i)
+            image_file_name = f"image{i}.jpg"
             image_file_path = os.path.join(".", image_file_name)
             image_file_paths.append(image_file_path)
             with open(image_file_path, 'w') as f:
@@ -134,9 +135,9 @@ def test_download_images(mock_echo, tweets):
 
     with CliRunner().isolated_filesystem():
         for tweet in tweets:
-            render_file_name = "tweet_{}_file.md".format(tweet.id)
-            paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_download,
-                                    mock_echo.echo)
+            render_file_name = f"tweet_{tweet.id}_file.md"
+            paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name,
+                                    mock_download, mock_echo.echo)
 
             if paths:
                 image_paths.append(paths[0])
@@ -144,11 +145,12 @@ def test_download_images(mock_echo, tweets):
         assert len(image_paths) == len(IMAGE_TWEET_IDS)
 
         for tweet_id in IMAGE_TWEET_IDS:
-            path = os.path.join("images", "tweet_{}_file-0.jpg".format(tweet_id))
+            path = os.path.join("images", f"tweet_{tweet_id}_file-0.jpg")
             assert os.path.exists(path)
             stat_info = os.stat(path)
             assert stat_info.st_size > 1024 * 1024
-            assert len([1 for p in image_paths if p.endswith(path)]) == 1, "path '{}' not found in image_paths list.".format(path)
+            assert len([1 for p in image_paths if p.endswith(path)]) == 1, f"path '{path}' not found in image_paths " \
+                                                                           f"list."
 
 
 # noinspection PyShadowingNames
@@ -160,15 +162,15 @@ def test_download_images_some_exist(mock_echo, tweets):
 
     with CliRunner().isolated_filesystem():
         for tweet in tweets:
-            render_file_name = "tweet_{}_file.md".format(tweet.id)
+            render_file_name = f"tweet_{tweet.id}_file.md"
 
             if tweet.id == IMAGE_TWEET_IDS[-1]:
-                with open(os.path.join("images", "tweet_{}_file-0.jpg".format(tweet.id)), "wb") as f:
+                with open(os.path.join("images", f"tweet_{tweet.id}_file-0.jpg"), "wb") as f:
                     f.seek(1024 * 1024)
                     f.write(b'0')
 
-            paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_download,
-                                    mock_echo.echo)
+            paths = download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name,
+                                    mock_download, mock_echo.echo)
 
             if paths:
                 image_paths.append(paths[0])
@@ -191,12 +193,13 @@ def test_download_images_media_update(mock_echo, tweets):
 
     with CliRunner().isolated_filesystem():
         for tweet in tweets:
-            render_file_name = "tweet_{}_file.md".format(tweet.id)
+            render_file_name = f"tweet_{tweet.id}_file.md"
             media_before[tweet.id] = [{'media_url': m['media_url'],
                                        'media_url_https': m['media_url_https']}
                                       for m in tweet.entities.get('media', []) if m['type'] == 'photo']
 
-            download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_download, mock_echo.echo)
+            download_images(tweet, image_dir_path_template, image_url_path_template, render_file_name, mock_download,
+                            mock_echo.echo)
 
             media_after[tweet.id] = [{'media_url': m['media_url'],
                                       'media_url_https': m['media_url_https'],
@@ -214,6 +217,17 @@ def test_download_images_media_update(mock_echo, tweets):
                 assert b['media_url'] != a['media_url']
                 assert b['media_url_https'] == a['original_media_url_https']
                 assert b['media_url_https'] != a['media_url_https']
+
+
+# noinspection PyShadowingNames
+def test_render_fail_template(mock_echo, tweets):
+    with CliRunner().isolated_filesystem():
+        template_text = "{{ }}"
+        options = {k: v.default for k, v in CONFIG_OPTIONS.items()}
+
+        with pytest.raises(TemplateError):
+            last_id = render(tweets, options, template_text, mock_download, mock_echo.echo)
+            assert last_id is None
 
 
 # noinspection PyShadowingNames
@@ -242,10 +256,10 @@ def test_render_to_files(mock_echo, tweets):
         assert len(mock_echo.messages) == 0
         text_file_names = sorted(glob.glob("*.txt"))
         assert len(tweets) == len(text_file_names)
-        assert "{}.txt".format(last_id) == text_file_names[-1]
+        assert f"{last_id}.txt" == text_file_names[-1]
 
         for tweet in tweets:
-            file_name = "{}.txt".format(tweet.id)
+            file_name = f"{tweet.id}.txt"
             assert os.path.exists(file_name)
             with open(file_name, "r") as f:
                 assert str(tweet.id) == f.read()
