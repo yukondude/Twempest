@@ -38,3 +38,9 @@ bump:
 	@echo "Tag the version: git tag -a <bumpedversion> -m<comment>"
 	@echo "Push to GitHub: git push --follow-tags"
 	@echo "Update homebrew formula version number and SHA."
+
+test:
+	pipenv run ./setup.py test
+
+cleantest:
+	pipenv run ./setup.py cleantest
