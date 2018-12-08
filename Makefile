@@ -11,25 +11,9 @@ README.rst: README.md
 README.md: README-template.md twempest.config.sample twempest.template.sample twempest/__init__.py
 	pipenv run ./build-readme.py
 
-clean:
-	rm -fr dist/
-	rm -fr build/
-	rm -fr output/
-
-docs: README.rst
-	pipenv run ./build-readme.py
-	@$(MAKE)
-
 build: clean docs
 	pipenv run ./setup.py sdist >/dev/null
 	pipenv run ./setup.py bdist_wheel >/dev/null
-
-deploy:
-	pipenv run ./setup.py test
-	@$(MAKE) build
-	ls dist/*.whl | xargs -I{} twine register {}
-	ls dist/*.whl | xargs -I{} twine upload {}
-	ls dist/*.tar.gz | xargs -I{} twine upload {}
 
 bump:
 	pipenv run ./bump-version.py
@@ -39,8 +23,24 @@ bump:
 	@echo "Push to GitHub: git push --follow-tags"
 	@echo "Update homebrew formula version number and SHA."
 
-test:
-	pipenv run ./setup.py test
+clean:
+	rm -fr dist/
+	rm -fr build/
+	rm -fr output/
 
 cleantest:
 	pipenv run ./setup.py cleantest
+
+deploy:
+	pipenv run ./setup.py test
+	@$(MAKE) build
+	ls dist/*.whl | xargs -I{} twine register {}
+	ls dist/*.whl | xargs -I{} twine upload {}
+	ls dist/*.tar.gz | xargs -I{} twine upload {}
+
+docs: README.rst
+	pipenv run ./build-readme.py
+	@$(MAKE)
+
+test:
+	pipenv run ./setup.py test
