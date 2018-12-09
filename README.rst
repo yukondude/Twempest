@@ -23,7 +23,7 @@ for details.
 Change Log
 ----------
 
-The current version is 0.2.6. Twempest is
+The current version is 0.2.7. Twempest is
 `semver <http://semver.org/>`__-ish in its versioning scheme.
 
 Twempest is currently a beta release candidate in preparation for
@@ -328,7 +328,7 @@ template tag_format with variables ``text`` and ``url`` to format each.
 Transform the given text into a suitable file name that is also scrubbed
 of URLs and hashtags.
 
-*README.md generated December 8, 2018*
+*README.md generated December 9, 2018*
 
 .. |status| image:: https://img.shields.io/pypi/status/Twempest.svg
    :target: https://pypi.python.org/pypi/twempest/
