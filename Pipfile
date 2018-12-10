@@ -15,7 +15,6 @@ pytest-flake8 = ">=1.0.2"
 
 [packages]
 click = ">=7.0"
-pipenv = "*"
 pytz = ">=2018.7"
 tweepy = ">=3.7.0"
 tzlocal = ">=1.5.1"
