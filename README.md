@@ -24,7 +24,7 @@ Refer to the attached LICENSE file or see <http://www.gnu.org/licenses/> for det
 
 ## Change Log
 
-The current version is 0.2.8.
+The current version is 0.2.9.
 Twempest is [semver](http://semver.org/)-ish in its versioning scheme.
 
 Twempest is currently a beta release candidate in preparation for version 1.0.0.

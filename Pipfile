@@ -19,5 +19,6 @@ pytz = ">=2018.7"
 tweepy = ">=3.7.0"
 tzlocal = ">=1.5.1"
 Jinja2 = ">=2.10"
+pipenv = "*"
 
 [requires]
