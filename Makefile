@@ -34,11 +34,9 @@ cleantest:
 deploy:
 	@$(MAKE) cleantest
 	@$(MAKE) build
-	$(eval DIST_WHL := $(shell ls dist/*.whl))
-	$(eval DIST_TGZ := $(shell ls dist/*.tar.gz))
-	#pipenv run twine register $(DIST_WHL)
-	pipenv run twine upload $(DIST_WHL)
-	pipenv run twine upload $(DIST_TGZ)
+	#pipenv run twine register dist/*.whl
+	pipenv run twine upload dist/*.whl
+	pipenv run twine upload dist/*.tar.gz
 
 docs: README.rst
 	pipenv run ./build-readme.py
