@@ -32,11 +32,13 @@ cleantest:
 	pipenv run ./setup.py cleantest
 
 deploy:
-	pipenv run ./setup.py test
+	@$(MAKE) cleantest
 	@$(MAKE) build
-	#ls dist/*.whl | xargs -I{} pipenv run twine register {}
-	ls dist/*.whl | xargs -I{} pipenv run twine upload {}
-	ls dist/*.tar.gz | xargs -I{} pipenv run twine upload {}
+	$(eval DIST_WHL := $(shell ls dist/*.whl))
+	$(eval DIST_TGZ := $(shell ls dist/*.tar.gz))
+	#pipenv run twine register $(DIST_WHL)
+	pipenv run twine upload $(DIST_WHL)
+	pipenv run twine upload $(DIST_TGZ)
 
 docs: README.rst
 	pipenv run ./build-readme.py
