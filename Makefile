@@ -34,9 +34,9 @@ cleantest:
 deploy:
 	pipenv run ./setup.py test
 	@$(MAKE) build
-	ls dist/*.whl | xargs -I{} twine register {}
-	ls dist/*.whl | xargs -I{} twine upload {}
-	ls dist/*.tar.gz | xargs -I{} twine upload {}
+	#ls dist/*.whl | xargs -I{} pipenv run twine register {}
+	ls dist/*.whl | xargs -I{} pipenv run twine upload {}
+	ls dist/*.tar.gz | xargs -I{} pipenv run twine upload {}
 
 docs: README.rst
 	pipenv run ./build-readme.py
