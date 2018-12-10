@@ -15,6 +15,9 @@ build: clean docs
 	pipenv run ./setup.py sdist >/dev/null
 	pipenv run ./setup.py bdist_wheel >/dev/null
 
+brew: twempest/__init__.py
+	pipenv run poet --formula twempest | pipenv run ./build-homebrew-formula.py >twempest.rb
+
 bump:
 	pipenv run ./bump-version.py
 	@$(MAKE) deploy

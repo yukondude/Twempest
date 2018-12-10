@@ -25,6 +25,9 @@ __pycache__/
 /.idea/tasks.xml
 /.idea/dictionaries/
 
+# Homebrew formula
+/twempest.rb
+
 # Twempest configuration
 /*.config
 /*.id
