@@ -12,10 +12,10 @@ flake8 = ">=3.6.0"
 pytest = ">=4.0.1"
 pytest-cov = ">=2.6.0"
 pytest-flake8 = ">=1.0.2"
-pipenv = "*"
 
 [packages]
 click = ">=7.0"
+pipenv = "*"
 pytz = ">=2018.7"
 tweepy = ">=3.7.0"
 tzlocal = ">=1.5.1"
