@@ -30,13 +30,14 @@ def test_choose_config_path():
             with open(os.path.join(possible_paths[i], CONFIG_FILE_NAME), 'w') as f:
                 f.write("[twitter]")
 
-            assert (possible_paths[i], possible_paths) == choose_config_path(possible_paths[0], possible_paths[1], possible_paths[2],
-                                                                             CONFIG_FILE_NAME)
+            assert (possible_paths[i], possible_paths) == choose_config_path(possible_paths[0], possible_paths[1],
+                                                                             possible_paths[2], CONFIG_FILE_NAME)
 
         for i in [2, 1, 0]:
             os.chmod(possible_paths[i], 0o555)
 
-        assert (None, possible_paths) == choose_config_path(possible_paths[0], possible_paths[1], possible_paths[2], CONFIG_FILE_NAME)
+        assert (None, possible_paths) == choose_config_path(possible_paths[0], possible_paths[1], possible_paths[2],
+                                                            CONFIG_FILE_NAME)
 
 
 def test_choose_option_values():

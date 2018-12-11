@@ -32,7 +32,8 @@ if __name__ == '__main__':
         sys.stderr.write("Can't convert version number {} to integer.".format(patch_match.group(2)))
         sys.exit(1)
 
-    version_text = patch_regex.sub(r"{}{}{}".format(patch_match.group(1), patch_number + 1, patch_match.group(3)), version_text)
+    version_text = patch_regex.sub(r"{}{}{}".format(patch_match.group(1), patch_number + 1, patch_match.group(3)),
+                                   version_text)
 
     with open(version_path, "w") as f:
         f.write(version_text)

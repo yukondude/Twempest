@@ -15,7 +15,8 @@ import jinja2
 
 @jinja2.contextfilter
 def delink(ctx, text):
-    """ Remove URLs and hashtag '#' prefixes from the given text, using the contents of the context's tweet status object as a guide.
+    """ Remove URLs and hashtag '#' prefixes from the given text, using the contents of the context's tweet status
+        object as a guide.
     """
     tweet_entities = ctx.parent['tweet'].entities
 
@@ -45,8 +46,8 @@ def qescape(text):
 
 @jinja2.contextfilter
 def reimage(ctx, text, tag_format, delimiter=" "):
-    """ Remove image URLs and append them to the end of the given text, following the template tag_format with variables 'alt' and 'url',
-        using the context's tweet status object to supply the necessary values.
+    """ Remove image URLs and append them to the end of the given text, following the template tag_format with variables
+        'alt' and 'url', using the context's tweet status object to supply the necessary values.
     """
     tweet_entities = ctx.parent['tweet'].entities
     images = []
@@ -69,8 +70,8 @@ def reimage(ctx, text, tag_format, delimiter=" "):
 
 @jinja2.contextfilter
 def relink(ctx, text, tag_format):
-    """ Add non-image URLs, hashtag, and user mention links to the given text, following the template tag_format with variables 'text' and
-        'url', using the context's tweet status object to supply the necessary values.
+    """ Add non-image URLs, hashtag, and user mention links to the given text, following the template tag_format with
+        variables 'text' and 'url', using the context's tweet status object to supply the necessary values.
     """
     tweet_entities = ctx.parent['tweet'].entities
     link_template = jinja2.Template(tag_format)
@@ -84,7 +85,7 @@ def relink(ctx, text, tag_format):
         text = text.replace(url['url'], link_template.render(text=url['display_url'], url=url['expanded_url']))
 
     for media in (m for m in tweet_entities.get('media', []) if m['type'] != 'photo'):
-        text = text.replace(media['url'], link_template.render(text=url['display_url'], url=url['expanded_url']))
+        text = text.replace(media['url'], link_template.render(text=media['display_url'], url=media['expanded_url']))
 
     for mention in tweet_entities.get('user_mentions', []):
         mention_text = mention['screen_name']

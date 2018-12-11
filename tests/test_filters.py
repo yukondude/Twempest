@@ -90,7 +90,8 @@ def test_relink(tweets):
         relinked = relink(ctx=MockContext(tweet), text=tweet.text, tag_format="@@{{text}}@@{{url}}@@")
 
         for hashtag in tweet.entities.get('hashtags', []):
-            assert "@@#{}@@https://twitter.com/hashtag/{}@@".format(hashtag['text'], hashtag['text'].lower()) in relinked
+            assert "@@#{}@@https://twitter.com/hashtag/{}@@".format(hashtag['text'], hashtag['text'].lower()) \
+                   in relinked
 
         for media in tweet.entities.get('media', []):
             if media['type'] == 'photo':

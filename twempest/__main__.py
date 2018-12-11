@@ -20,62 +20,69 @@ CONFIG_FILE_NAME = "twempest.config"
 DEFAULT_CONFIG_DIR_PATH = "~/.twempest"
 FALLBACK_CONFIG_DIR_PATH = "."
 
-# Collect all configuration options (that may also appear in the config file) here so that they don't have to be duplicated.
+# Collect all configuration options (that may also appear in the config file) here so that they don't have to be
+# duplicated.
 ConfigOption = collections.namedtuple('ConfigOption', "short default show_default is_flag help")
 CONFIG_OPTIONS = {
     'abbreviated': ConfigOption(short='A', default=False, show_default=False, is_flag=True,
-                                help="Render the abbreviated form of the tweet text rather than the full, extended, version."),
+                                help="Render the abbreviated form of the tweet text rather than the full, extended, "
+                                     "version."),
     'append': ConfigOption('a', False, False, True,
                            "Append rendered tweet(s) to existing file(s) rather than skipping past with a warning."),
-    'count': ConfigOption('n', 200, True, False, "Maximum number of tweets to retrieve. The actual number may be lower."),
-    'dry-run': ConfigOption('D', False, False, True, "Display all configuration options and template contents without retrieving tweets."),
-    'image-path': ConfigOption('i', None, False, False, "The directory path (template tags allowed) to write downloaded image "
-                                                        "(media type == 'photo') files. "
-                                                        "The directory path will be created if it doesn't exist. "
-                                                        "Media file names use the --render-file name followed by a number and the "
+    'count': ConfigOption('n', 200, True, False, "Maximum number of tweets to retrieve. The actual number may be "
+                                                 "lower."),
+    'dry-run': ConfigOption('D', False, False, True, "Display all configuration options and template contents without "
+                                                     "retrieving tweets."),
+    'image-path': ConfigOption('i', None, False, False, "The directory path (template tags allowed) to write "
+                                                        "downloaded image (media type == 'photo') files. The directory "
+                                                        "path will be created if it doesn't exist. Media file names "
+                                                        "use the --render-file name followed by a number and the "
                                                         "appropriate file extension. "
                                                         "If omitted, media files will not be downloaded."),
-    'image-url': ConfigOption('u', None, False, False, "The URL path (template tags allowed) to use for all image files downloaded via the "
-                                                       "--image-path option."),
-    'pickle': ConfigOption(None, False, False, True, "Serialize a list of the rendered tweet statuses as a standard Python pickle byte "
-                                                     "stream. The stream will be written to 'twempest.p' in the current working "
-                                                     "directory."),
+    'image-url': ConfigOption('u', None, False, False, "The URL path (template tags allowed) to use for all image "
+                                                       "files downloaded via the --image-path option."),
+    'pickle': ConfigOption(None, False, False, True, "Serialize a list of the rendered tweet statuses as a standard "
+                                                     "Python pickle byte stream. The stream will be written to "
+                                                     "'twempest.p' in the current working directory."),
     'quiet': ConfigOption('q', False, False, True, "Suppress warning messages."),
-    'render-file': ConfigOption('f', None, False, False, "The file name (template tags allowed) for the rendered tweets. "
-                                                         "If omitted, tweets will be rendered to STDOUT."),
-    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the rendered tweet files. "
-                                                       "The directory path will be created if it doesn't exist."),
+    'render-file': ConfigOption('f', None, False, False, "The file name (template tags allowed) for the rendered "
+                                                         "tweets. If omitted, tweets will be rendered to STDOUT."),
+    'render-path': ConfigOption('p', ".", True, False, "The directory path (template tags allowed) to write the "
+                                                       "rendered tweet files. The directory path will be created if "
+                                                       "it doesn't exist."),
     'replies': ConfigOption('@', False, False, True, "Include @replies in the list of retrieved tweets."),
     'retweets': ConfigOption('r', False, False, True, "Include retweets in the list of retrieved tweets."),
     'since-id': ConfigOption('s', None, False, False, "Retrieve tweets that follow this ID in the timeline. "
-                                                      "Required, unless the ID has already been recorded in the config path directory "
-                                                      "after a previous run of Twempest."),
-    'skip': ConfigOption('k', None, False, False, "Skip any rendered tweets that contain this regular expression pattern."),
+                                                      "Required, unless the ID has already been recorded in the config "
+                                                      "path directory after a previous run of Twempest."),
+    'skip': ConfigOption('k', None, False, False, "Skip any rendered tweets that contain this regular expression "
+                                                  "pattern."),
 }
 
 
 def choose_config_path(cli_dir_path, default_dir_path, fallback_dir_path, file_name):
-    """ Choose the most likely configuration path from, in order: the CLI config-path option, the default path, and the fallback path
-        (current directory). To be valid, the config path must contain a twempest.conf file and the directory must be writable. Return
-        both the chosen path and the possible paths as a tuple.
+    """ Choose the most likely configuration path from, in order: the CLI config-path option, the default path, and the
+        fallback path (current directory). To be valid, the config path must contain a twempest.conf file and the
+        directory must be writable. Return both the chosen path and the possible paths as a tuple.
     """
     # Using keys of OrderedDict simulates an OrderedSet type.
-    unique_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None) for p in (cli_dir_path, default_dir_path,
-                                                                                                     fallback_dir_path)])
+    unique_paths = collections.OrderedDict([(os.path.abspath(os.path.expanduser(p)), None)
+                                            for p in (cli_dir_path, default_dir_path, fallback_dir_path)])
     possible_paths = list(unique_paths.keys())
 
     for possible_path in possible_paths:
         possible_config_path = os.path.join(possible_path, file_name)
 
-        if os.path.isfile(possible_config_path) and os.access(possible_config_path, os.R_OK) and os.access(possible_path, os.W_OK):
+        if os.path.isfile(possible_config_path) and os.access(possible_config_path, os.R_OK) and \
+                os.access(possible_path, os.W_OK):
             return possible_path, possible_paths
 
     return None, possible_paths
 
 
 def choose_option_values(config_options, cli_options, config):
-    """ For each of the options given, choose a value from, in order: the CLI option, the config file, the CONFIG_OPTIONS default. Return
-        the option values in a tuple.
+    """ For each of the options given, choose a value from, in order: the CLI option, the config file, the
+        CONFIG_OPTIONS default. Return the option values in a tuple.
     """
     options = {}
 
@@ -93,15 +100,16 @@ def choose_option_values(config_options, cli_options, config):
 
 
 def choose_since_id(cli_since_id, user_id, config_dir_path):
-    """ Choose the most likely since ID value from, in order: the CLI since-id option, and a record of the ID written to a file in the
-        config directory using the given user_id to distinguish it from others.
+    """ Choose the most likely since ID value from, in order: the CLI since-id option, and a record of the ID written to
+        a file in the config directory using the given user_id to distinguish it from others.
     """
     since_id = cli_since_id
 
     if since_id:
         return since_id
 
-    # Hash the user ID so that it's unique to that user, but doesn't reveal part of the authentication credentials in the file name.
+    # Hash the user ID so that it's unique to that user, but doesn't reveal part of the authentication credentials in
+    # the file name.
     last_id_file_name = last_tweet_id_file_name(user_id)
     last_id_file_path = os.path.join(config_dir_path, last_id_file_name)
 
@@ -113,7 +121,8 @@ def choose_since_id(cli_since_id, user_id, config_dir_path):
 
 
 def decorate_config_options(options):
-    """ Return a decorator with all of the CONFIG_OPTIONS items as a chain of click.option decorators, sorted by option name.
+    """ Return a decorator with all of the CONFIG_OPTIONS items as a chain of click.option decorators, sorted by option
+        name.
     """
     def option_decorators(fn):
         """ Return the decorator chain wrapped around the given function.
@@ -126,8 +135,8 @@ def decorate_config_options(options):
             if config_option.show_default:
                 help_text += "  [default: {}]".format(config_option.default)
 
-            # Don't specify a default value for the option, as it will be the fallback when choose_option_values() is called. For this
-            # reason, append the default to the help text manually if it is to be shown.
+            # Don't specify a default value for the option, as it will be the fallback when choose_option_values() is
+            # called. For this reason, append the default to the help text manually if it is to be shown.
             args = ["--" + option]
 
             if config_option.short:
@@ -143,8 +152,8 @@ def decorate_config_options(options):
 
 
 def echo_wrapper(echo_func, is_quiet):
-    """ Return a function based upon the given echo_func() function that adds a 'warning' parameter. If is_quiet is True, calls to this
-        wrapped echo() with warning == True will not be echo-ed. Echo!
+    """ Return a function based upon the given echo_func() function that adds a 'warning' parameter. If is_quiet is
+        True, calls to this wrapped echo() with warning == True will not be echo-ed. Echo!
     """
     def wrapped_echo(message=None, file=None, nl=True, err=False, color=None, warning=False):
         """ Echo the message unless warning and is_quiet are both True.
@@ -175,21 +184,25 @@ def show_version(ctx, param, value):
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--config-path", "-c", default=DEFAULT_CONFIG_DIR_PATH, show_default=True,
-              help="Twempest configuration directory path, which must be writable, and must also contain the twempest.conf file.")
+              help="Twempest configuration directory path, which must be writable, and must also contain the "
+                   "twempest.conf file.")
 @decorate_config_options(CONFIG_OPTIONS)
-@click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True, help="Show version and exit.")
+@click.option("--version", "-V", is_flag=True, callback=show_version, expose_value=False, is_eager=True,
+              help="Show version and exit.")
 @click.argument("template", type=click.File('r'))
 def twempest(**kwargs):
     """ Download a sequence of recent Twitter tweets and convert these, via the given template file, to text format.
         Twempest uses the Jinja template syntax throughout: http://jinja.pocoo.org/docs/2.9/templates/
     """
     config = configparser.RawConfigParser(allow_no_value=True)
-    config_dir_path, possible_paths = choose_config_path(cli_dir_path=kwargs['config_path'], default_dir_path=DEFAULT_CONFIG_DIR_PATH,
-                                                         fallback_dir_path=FALLBACK_CONFIG_DIR_PATH, file_name=CONFIG_FILE_NAME)
+    config_dir_path, possible_paths = choose_config_path(cli_dir_path=kwargs['config_path'],
+                                                         default_dir_path=DEFAULT_CONFIG_DIR_PATH,
+                                                         fallback_dir_path=FALLBACK_CONFIG_DIR_PATH,
+                                                         file_name=CONFIG_FILE_NAME)
 
     if not config_dir_path:
-        raise click.ClickException("Could not find readable twempest.conf configuration file in writable directory path(s): '{}'"
-                                   .format("', '".join(possible_paths)))
+        raise click.ClickException("Could not find readable twempest.conf configuration file in writable directory"
+                                   "path(s): '{}'".format("', '".join(possible_paths)))
 
     config_file_path = os.path.join(config_dir_path, CONFIG_FILE_NAME)
     config.read(config_file_path)
@@ -198,12 +211,15 @@ def twempest(**kwargs):
         twitter_config = config['twitter']
         twempest_config = config['twempest']
     except KeyError as e:
-        raise click.ClickException("Could not find required '[{}]' section in '{}'".format(str(e).strip("'"), config_file_path))
+        raise click.ClickException("Could not find required '[{}]' section in '{}'".format(str(e).strip("'"),
+                                                                                           config_file_path))
 
     try:
-        auth_keys = {k: twitter_config[k] for k in ('consumer_key', 'consumer_secret', 'access_token', 'access_token_secret')}
+        auth_keys = {k: twitter_config[k] for k in ('consumer_key', 'consumer_secret', 'access_token',
+                                                    'access_token_secret')}
     except KeyError as e:
-        raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'".format(str(e), config_file_path))
+        raise click.ClickException("Could not find required Twitter authentication credential {} in '{}'"
+                                   .format(str(e), config_file_path))
 
     options = choose_option_values(config_options=CONFIG_OPTIONS, cli_options=kwargs, config=twempest_config)
     options['config-path'] = config_file_path
@@ -220,16 +236,17 @@ def twempest(**kwargs):
         raise click.ClickException("Cannot download images unless the --render-file option is also specified.")
 
     if options['image-url'] and not options['image-path']:
-        raise click.ClickException("The --image-url option may only be specified if the --image-path option is as well.")
+        raise click.ClickException("The --image-url option may only be specified if the --image-path option is as "
+                                   "well.")
 
     options['since-id'] = choose_since_id(cli_since_id=options['since-id'], user_id=twitter_config['consumer_key'],
                                           config_dir_path=config_dir_path)
 
     if not options['since-id']:
-        raise click.ClickException("The --since-id option is required since the ID was not recorded in '{}' after a previous run of "
-                                   "Twempest. To find the ID, open a specific tweet on the Twitter website and view the page's address: "
-                                   "the long number following 'status/' is that tweet's ID."
-                                   .format(config_dir_path))
+        raise click.ClickException("The --since-id option is required since the ID was not recorded in '{}' after a "
+                                   "previous run of Twempest. To find the ID, open a specific tweet on the Twitter "
+                                   "website and view the page's address: the long number following 'status/' is that "
+                                   "tweet's ID.".format(config_dir_path))
 
     if options['skip'] is not None:
         try:
@@ -261,7 +278,8 @@ def twempest(**kwargs):
 
         if last_tweet_id:
             try:
-                with open(os.path.join(config_dir_path, last_tweet_id_file_name(user_id=twitter_config['consumer_key'])), 'w') as f:
+                with open(os.path.join(config_dir_path, last_tweet_id_file_name(
+                        user_id=twitter_config['consumer_key'])), 'w') as f:
                     f.write(str(last_tweet_id))
             except OSError as e:
                 raise click.ClickException("Unable to write last tweet ID file: {}".format(e))
