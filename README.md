@@ -83,7 +83,7 @@ Usage: twempest [OPTIONS] TEMPLATE
 
   Download a sequence of recent Twitter tweets and convert these, via the
   given template file, to text format. Twempest uses the Jinja template
-  syntax throughout: http://jinja.pocoo.org/docs/2.9/templates/
+  syntax throughout: http://jinja.pocoo.org/docs/2.10/templates/
 
 Options:
   -c, --config-path TEXT  Twempest configuration directory path, which must be
