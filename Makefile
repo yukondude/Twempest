@@ -19,7 +19,11 @@ brew: twempest/__init__.py
 	pipenv run poet --formula twempest | pipenv run ./build-homebrew-formula.py >twempest.rb
 
 bump:
-	pipenv run bumpversion --commit --tag patch twempest/__init__.py
+	@$(MAKE) cleantest
+	pipenv run bumpversion --list patch twempest/__init__.py
+	@$(MAKE) build
+	@echo "Commit the changes: git add . ; git commit -m<comment>"
+	@echo "Tag the version: git tag -a <bumpedversion> -m<comment>"
 	@echo "Push to GitHub: git push --follow-tags"
 	@echo "Deploy to PyPI: make deploy"
 	@echo "Update Homebrew formula: make brew"
