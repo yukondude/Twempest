@@ -19,10 +19,7 @@ brew: twempest/__init__.py
 	pipenv run poet --formula twempest | pipenv run ./build-homebrew-formula.py >twempest.rb
 
 bump:
-	pipenv run bumpversion --allow-dirty patch twempest/__init__.py
-	@$(MAKE) deploy
-	@echo "Commit the changes: git add . ; git commit -m<comment>"
-	@echo "Tag the version: git tag -a <bumpedversion> -m<comment>"
+	pipenv run bumpversion --commit --tag patch twempest/__init__.py
 	@echo "Push to GitHub: git push --follow-tags"
 	@echo "Update homebrew formula version number and SHA."
 
