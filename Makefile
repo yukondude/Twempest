@@ -21,7 +21,8 @@ brew: twempest/__init__.py
 bump:
 	pipenv run bumpversion --commit --tag patch twempest/__init__.py
 	@echo "Push to GitHub: git push --follow-tags"
-	@echo "Update homebrew formula version number and SHA."
+	@echo "Deploy to PyPI: make deploy"
+	@echo "Update Homebrew formula: make brew"
 
 clean:
 	rm -fr dist/
@@ -35,7 +36,6 @@ cleantest:
 deploy:
 	@$(MAKE) cleantest
 	@$(MAKE) build
-	#pipenv run twine register dist/*.whl
 	pipenv run twine upload dist/*.whl
 	pipenv run twine upload dist/*.tar.gz
 
